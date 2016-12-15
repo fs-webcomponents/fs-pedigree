@@ -89,7 +89,11 @@ Display more generations.
       
       properties: {
         
-        personId: String,
+        personId: {
+          type: String,
+          observer: '_personIdChanged',
+          reflectToAttribute: true
+        },
         
         requested: {
           type: Boolean,
@@ -121,11 +125,17 @@ Display more generations.
         }
       },
       
+      _personIdChanged: function(){
+        this._setRequested(false);
+        this._loadAncestry();
+      },
+      
       _loadAncestry: function(){
         var self = this;
         if(self.isAuthenticated() && self.personId && !self.loading && !self.requested){
           self._setRequested(true);
           self._setLoading(true);
+          self.pedigree = {};
           self.getClient().get('/platform/tree/ancestry?person=' + self.personId, function(error, response){
             self._setLoading(false);
             if(response && response.statusCode === 200){
