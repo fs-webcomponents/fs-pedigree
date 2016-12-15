@@ -80,6 +80,14 @@ Display more generations.
         height: 62.5%;
       }
       
+      fs-pedigree-person[greatgrandparent][father]:after {
+        top: 35%;
+      }
+      
+      fs-pedigree-person[greatgrandparent][mother]:after {
+        bottom: 35%;
+      }
+      
     </style>
     
     <fs-client name="[[clientName]]" on-authenticated-changed="_authenticatedChanged"></fs-client>
