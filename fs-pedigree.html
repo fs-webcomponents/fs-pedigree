@@ -20,10 +20,9 @@ Display more generations.
 <dom-module id="fs-pedigree">
   <template>
     <style>
+
       :host {
-        --fs-pedigree-person-width: 250px;
-        --fs-pedigree-person-vertical-margin: 8px;
-        --fs-pedigree-column-padding: 16px;
+        display: block;
       }
       
       #pedigree {
@@ -31,15 +30,15 @@ Display more generations.
       }
       
       .column {
-        padding: 0 var(--fs-pedigree-column-padding);
+        padding: 0 var(--fs-pedigree-column-padding, 16px);
         display: flex;
         flex-direction: column;
         justify-content: space-around;
       }
       
       fs-pedigree-person {
-        width: var(--fs-pedigree-person-width);
-        margin: var(--fs-pedigree-person-vertical-margin) 0;
+        width: var(--fs-pedigree-person-width, 250px);
+        margin: var(--fs-pedigree-person-vertical-margin, 8px) 0;
         position: relative;
       }
       
