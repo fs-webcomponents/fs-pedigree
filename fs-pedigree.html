@@ -40,7 +40,46 @@ Display more generations.
       fs-pedigree-person {
         width: var(--fs-pedigree-person-width);
         margin: var(--fs-pedigree-person-vertical-margin) 0;
+        position: relative;
       }
+      
+      fs-pedigree-person[father]:after,
+      fs-pedigree-person[mother]:after {
+        content: '';
+        height: 60px;
+        display: block;
+        position: absolute;
+        border-color: #888;
+        border-style: solid;
+        border-radius: 5px;
+        border-width: 0;
+        z-index: -1;
+        width: 33%;
+        left: -25%;
+      }
+      
+      fs-pedigree-person[father]:after {
+        top: 50%;
+        border-width: 1px 0 0 1px;
+      }
+      
+      fs-pedigree-person[mother]:after {
+        bottom: 50%;
+        border-width: 0 0 1px 1px;
+      }
+      
+      fs-pedigree-person[parent]:after {
+        height: 250%;
+      }
+      
+      fs-pedigree-person[grandparent]:after {
+        height: 125%;
+      }
+      
+      fs-pedigree-person[greatgrandparent]:after {
+        height: 62.5%;
+      }
+      
     </style>
     
     <fs-client name="[[clientName]]" on-authenticated-changed="_authenticatedChanged"></fs-client>
@@ -54,28 +93,28 @@ Display more generations.
       
       <!-- parents -->
       <div class="column">
-        <fs-pedigree-person person="{{pedigree.2}}"></fs-pedigree-person>
-        <fs-pedigree-person person="{{pedigree.3}}"></fs-pedigree-person>
+        <fs-pedigree-person person="{{pedigree.2}}" parent father></fs-pedigree-person>
+        <fs-pedigree-person person="{{pedigree.3}}" parent mother></fs-pedigree-person>
       </div>
       
       <!-- grandparents -->
       <div class="column">
-        <fs-pedigree-person person="{{pedigree.4}}"></fs-pedigree-person>
-        <fs-pedigree-person person="{{pedigree.5}}"></fs-pedigree-person>
-        <fs-pedigree-person person="{{pedigree.6}}"></fs-pedigree-person>
-        <fs-pedigree-person person="{{pedigree.7}}"></fs-pedigree-person>
+        <fs-pedigree-person person="{{pedigree.4}}" grandparent father></fs-pedigree-person>
+        <fs-pedigree-person person="{{pedigree.5}}" grandparent mother></fs-pedigree-person>
+        <fs-pedigree-person person="{{pedigree.6}}" grandparent father></fs-pedigree-person>
+        <fs-pedigree-person person="{{pedigree.7}}" grandparent mother></fs-pedigree-person>
       </div>
       
       <!-- great-grandparents -->
       <div class="column">
-        <fs-pedigree-person person="{{pedigree.8}}"></fs-pedigree-person>
-        <fs-pedigree-person person="{{pedigree.9}}"></fs-pedigree-person>
-        <fs-pedigree-person person="{{pedigree.10}}"></fs-pedigree-person>
-        <fs-pedigree-person person="{{pedigree.11}}"></fs-pedigree-person>
-        <fs-pedigree-person person="{{pedigree.12}}"></fs-pedigree-person>
-        <fs-pedigree-person person="{{pedigree.13}}"></fs-pedigree-person>
-        <fs-pedigree-person person="{{pedigree.14}}"></fs-pedigree-person>
-        <fs-pedigree-person person="{{pedigree.15}}"></fs-pedigree-person>
+        <fs-pedigree-person person="{{pedigree.8}}" greatgrandparent father></fs-pedigree-person>
+        <fs-pedigree-person person="{{pedigree.9}}" greatgrandparent mother></fs-pedigree-person>
+        <fs-pedigree-person person="{{pedigree.10}}" greatgrandparent father></fs-pedigree-person>
+        <fs-pedigree-person person="{{pedigree.11}}" greatgrandparent mother></fs-pedigree-person>
+        <fs-pedigree-person person="{{pedigree.12}}" greatgrandparent father></fs-pedigree-person>
+        <fs-pedigree-person person="{{pedigree.13}}" greatgrandparent mother></fs-pedigree-person>
+        <fs-pedigree-person person="{{pedigree.14}}" greatgrandparent father></fs-pedigree-person>
+        <fs-pedigree-person person="{{pedigree.15}}" greatgrandparent mother></fs-pedigree-person>
       </div>
     </div>
     
