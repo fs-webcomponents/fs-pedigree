@@ -119,6 +119,20 @@ Display more generations.
         this._loadAncestry();
       },
       
+      attached: function(){
+        var self = this;
+        Polymer.dom(this.$.pedigree).querySelectorAll('fs-pedigree-person').forEach(function($person){
+          self.listen($person, 'tap', '_personTap');
+        });
+      },
+      
+      _personTap: function(event){
+        var person = event.currentTarget.person;
+        if(person && person.id){
+          this.fire('person-tap', {personId: person.id});
+        }
+      },
+      
       _authenticatedChanged: function(event){
         if(event.detail.value){
           this._loadAncestry();

@@ -27,9 +27,18 @@
 
     <script>
       var pedigree = document.querySelector('fs-pedigree');
+      
+      // Update pedigree when the person ID in the paper-input changes
       document.getElementById('person-id').addEventListener('change', function(e){
         if(this.value){
           pedigree.personId = this.value;
+        }
+      });
+      
+      // Update the pedigree when a person in the pedigree is clicked
+      pedigree.addEventListener('person-tap', function(e){
+        if(e.detail.personId){
+          pedigree.personId = e.detail.personId;
         }
       });
     </script>
