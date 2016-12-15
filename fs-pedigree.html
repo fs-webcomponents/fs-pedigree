@@ -1,5 +1,6 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../fs-client/fs-client.html">
+<link rel="import" href="../fs-person-summary/fs-person-summary-card.html">
 
 <!--
 Display a FamilySearch person's pedigree.
@@ -22,6 +23,9 @@ Display more generations.
       
     </style>
     <fs-client name="[[clientName]]" on-authenticated-changed="_authenticatedChanged"></fs-client>
+    
+    <fs-person-summary-card id="p1" person="{{pedigree.1}}"></fs-person-summary-card>
+    
   </template>
 
   <script>
@@ -44,6 +48,10 @@ Display more generations.
           type: Boolean,
           readOnly: true,
           value: false
+        },
+        
+        pedigree: {
+          type: Object
         }
         
       },
@@ -62,17 +70,24 @@ Display more generations.
       
       _loadAncestry: function(){
         var self = this;
-        if(this.isAuthenticated() && this.personId && !this.loading && !this.requested){
-          this._setRequested(true);
-          this._setLoading(true);
-          this.getClient().get('/platform/tree/ancestry?person=' + this.personId, function(error, response){
+        if(self.isAuthenticated() && self.personId && !self.loading && !self.requested){
+          self._setRequested(true);
+          self._setLoading(true);
+          self.getClient().get('/platform/tree/ancestry?person=' + self.personId, function(error, response){
             self._setLoading(false);
-            if(error){
-              console.error(error);
-            } else if(response && response.statusCode === 200){
-              console.log(response.data);
+            if(response && response.statusCode === 200){
+              self._setupPedigree(response.data.persons);
+            } else {
+              console.log(error || response.statusCode);
             }
           });
+        }
+      },
+      
+      _setupPedigree: function(persons){
+        this.pedigree = {};
+        for(var i = 0; i < persons.length; i++){
+          this.set('pedigree.' + persons[i].display.ascendancyNumber, persons[i]);
         }
       }
       
