@@ -1,0 +1,83 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../fs-client/fs-client.html">
+
+<!--
+Display a FamilySearch person's pedigree.
+
+Default display of 3 generations.
+
+    <fs-pedigree person-id="PPPP-PPP"></fs-pedigree>
+    
+Display more generations.
+
+    <fs-pedigree person-id="PPPP-PPP" generations="8"></fs-pedigree>
+
+@group FamilySearch Elements
+@element fs-pedigree
+@demo demo/index.html
+-->
+<dom-module id="fs-pedigree">
+  <template>
+    <style>
+      
+    </style>
+    <fs-client name="[[clientName]]" on-authenticated-changed="_authenticatedChanged"></fs-client>
+  </template>
+
+  <script>
+  
+    Polymer({
+  
+      is: 'fs-pedigree',
+      
+      properties: {
+        
+        personId: String,
+        
+        requested: {
+          type: Boolean,
+          readOnly: true,
+          value: false
+        },
+        
+        loading: {
+          type: Boolean,
+          readOnly: true,
+          value: false
+        }
+        
+      },
+      
+      behaviors: [FSBehavior],
+      
+      ready: function(){
+        this._loadAncestry();
+      },
+      
+      _authenticatedChanged: function(event){
+        if(event.detail.value){
+          this._loadAncestry();
+        }
+      },
+      
+      _loadAncestry: function(){
+        var self = this;
+        if(this.isAuthenticated() && this.personId && !this.loading && !this.requested){
+          this._setRequested(true);
+          this._setLoading(true);
+          this.getClient().get('/platform/tree/ancestry?person=' + this.personId, function(error, response){
+            self._setLoading(false);
+            if(error){
+              console.error(error);
+            } else if(response && response.statusCode === 200){
+              console.log(response.data);
+            }
+          });
+        }
+      }
+      
+    });
+  
+  </script>
+
+</dom-module>
