@@ -1,6 +1,6 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../fs-client/fs-client.html">
-<link rel="import" href="../fs-person-summary/fs-person-summary-card.html">
+<link rel="import" href="fs-pedigree-person.html">
 
 <!--
 Display a FamilySearch person's pedigree.
@@ -20,11 +20,35 @@ Display more generations.
 <dom-module id="fs-pedigree">
   <template>
     <style>
-      
+      fs-pedigree-person {
+        width: 250px;
+      }
     </style>
+    
     <fs-client name="[[clientName]]" on-authenticated-changed="_authenticatedChanged"></fs-client>
     
-    <fs-person-summary-card id="p1" person="{{pedigree.1}}"></fs-person-summary-card>
+    <!-- root person -->
+    <fs-pedigree-person person="{{pedigree.1}}"></fs-pedigree-person>
+    
+    <!-- parents -->
+    <fs-pedigree-person person="{{pedigree.2}}"></fs-pedigree-person>
+    <fs-pedigree-person person="{{pedigree.3}}"></fs-pedigree-person>
+    
+    <!-- grandparents -->
+    <fs-pedigree-person person="{{pedigree.4}}"></fs-pedigree-person>
+    <fs-pedigree-person person="{{pedigree.5}}"></fs-pedigree-person>
+    <fs-pedigree-person person="{{pedigree.6}}"></fs-pedigree-person>
+    <fs-pedigree-person person="{{pedigree.7}}"></fs-pedigree-person>
+    
+    <!-- great-grandparents -->
+    <fs-pedigree-person person="{{pedigree.8}}"></fs-pedigree-person>
+    <fs-pedigree-person person="{{pedigree.9}}"></fs-pedigree-person>
+    <fs-pedigree-person person="{{pedigree.10}}"></fs-pedigree-person>
+    <fs-pedigree-person person="{{pedigree.11}}"></fs-pedigree-person>
+    <fs-pedigree-person person="{{pedigree.12}}"></fs-pedigree-person>
+    <fs-pedigree-person person="{{pedigree.13}}"></fs-pedigree-person>
+    <fs-pedigree-person person="{{pedigree.14}}"></fs-pedigree-person>
+    <fs-pedigree-person person="{{pedigree.15}}"></fs-pedigree-person>
     
   </template>
 
