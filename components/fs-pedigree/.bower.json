@@ -1,0 +1,37 @@
+{
+  "name": "fs-pedigree",
+  "homepage": "https://github.com/fs-webcomponents/fs-pedigree",
+  "authors": [
+    "Justin <justincyork@gmail.com>"
+  ],
+  "description": "Display a FamilySearch person's pedigree",
+  "main": "fs-pedigree.html",
+  "keywords": [
+    "web-component",
+    "familysearch",
+    "polymer"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "fs-client": "fs-webcomponents/fs-client#^2.0.0",
+    "fs-behavior": "fs-webcomponents/fs-behavior#^2.0.0",
+    "polymer": "Polymer/polymer#^1.7.1",
+    "fs-person-chip": "fs-webcomponents/fs-person-chip#^2.0.0",
+    "paper-card": "PolymerElements/paper-card#^1.1.4"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "fs-signin": "fs-webcomponents/fs-signin#^2.0.0",
+    "paper-input": "PolymerElements/paper-input#^1.1.22"
+  },
+  "_release": "c2f154f483",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "c2f154f4835255487084764b877fbc3e3c2a468b"
+  },
+  "_source": "git://github.com/fs-webcomponents/fs-pedigree.git",
+  "_target": "master",
+  "_originalSource": "fs-webcomponents/fs-pedigree",
+  "_direct": true
+}

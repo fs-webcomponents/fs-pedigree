@@ -1,0 +1,43 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-card/paper-card.html">
+<link rel="import" href="../fs-person-chip/fs-person-chip.html">
+
+<!--
+A person chip card for display persons in a pedigree.
+
+Basic example:
+
+    <fs-pedigree-person person-id="PPP-PPPP"></fs-pedigree-person>
+
+@group FamilySearch Elements
+@element fs-pedigree-person
+@demo demo/index.html
+-->
+<dom-module id="fs-pedigree-person">
+  <template>
+    <style>
+      :host, paper-card {
+        display: block
+      }
+    </style>
+    <paper-card>
+      <div class="card-content">
+        <fs-person-chip person-id="{{personId}}" person="{{person}}"></fs-person-chip>
+      </div>
+    </paper-card>
+  </template>
+
+  <script>
+    Polymer({
+  
+      is: 'fs-pedigree-person',
+      
+      properties: {
+        person: Object,
+        personId: String
+      }
+      
+    });
+  </script>
+
+</dom-module>
