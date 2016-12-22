@@ -129,7 +129,8 @@ Display a FamilySearch person's pedigree. Currently it only supports displaying
       is: 'fs-pedigree',
       
       /**
-       * Fired when a person is tapped.
+       * Fired when a person is tapped. The event details will contain the same
+       * details as a click event with an added `personId` property.
        *
        * @event person-tap
        * @param {{personId:string}} ID of the person that was clicked.
@@ -177,7 +178,8 @@ Display a FamilySearch person's pedigree. Currently it only supports displaying
       _personTap: function(event){
         var person = event.currentTarget.person;
         if(person && person.id){
-          this.fire('person-tap', {personId: person.id});
+          event.detail.personId = person.id;
+          this.fire('person-tap', event.detail);
         }
       },
       
