@@ -4,6 +4,7 @@
   "authors": [
     "Justin <justincyork@gmail.com>"
   ],
+  "version": "3.0.0",
   "description": "Display a FamilySearch person's pedigree",
   "main": "fs-pedigree.html",
   "keywords": [
