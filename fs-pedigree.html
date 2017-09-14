@@ -1,6 +1,8 @@
-<link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../fs-client/fs-client.html">
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../fs-request/fs-request.html">
+<link rel="import" href="../fs-api-aware/fs-api-aware.html">
 <link rel="import" href="fs-pedigree-person.html">
+<link rel="import" href="../polymer/lib/mixins/gesture-event-listeners.html">
 
 <!--
 Display a FamilySearch person's pedigree. Currently it only supports displaying
@@ -9,13 +11,13 @@ Display a FamilySearch person's pedigree. Currently it only supports displaying
     <fs-pedigree person-id="PPPP-PPP"></fs-pedigree>
     
 @group FamilySearch Elements
-@element fs-pedigree
+@customElement
+@polymer
 @demo demo/index.html
 -->
 <dom-module id="fs-pedigree">
   <template>
     <style>
-
       :host {
         display: block;
       }
@@ -81,11 +83,14 @@ Display a FamilySearch person's pedigree. Currently it only supports displaying
       fs-pedigree-person[greatgrandparent][mother]:after {
         bottom: 35%;
       }
-      
     </style>
-    
-    <fs-client name="[[clientName]]" on-authenticated-changed="_authenticatedChanged"></fs-client>
-    
+    <fs-request
+      auto
+      client-name="[[clientName]]"
+      require-authentication
+      url="{{_computeUrl(personId)}}"
+      on-loading-changed="_updateLoading"
+      on-response="_handleResponse"></fs-client>
     <div id="pedigree">
       
       <!-- root person -->
@@ -119,14 +124,12 @@ Display a FamilySearch person's pedigree. Currently it only supports displaying
         <fs-pedigree-person person="{{pedigree.15}}" greatgrandparent mother></fs-pedigree-person>
       </div>
     </div>
-    
   </template>
 
   <script>
+    class FSPedigree extends Polymer.GestureEventListeners(FSApiAwareMixin(Polymer.Element)) {
   
-    Polymer({
-  
-      is: 'fs-pedigree',
+      static get is() { return 'fs-pedigree'; }
       
       /**
        * Fired when a person is tapped. The event details will contain the same
@@ -136,90 +139,72 @@ Display a FamilySearch person's pedigree. Currently it only supports displaying
        * @param {{personId:string}} ID of the person that was clicked.
        */
       
-      properties: {
-        
-        personId: {
-          type: String,
-          observer: '_personIdChanged',
-          reflectToAttribute: true
-        },
-        
-        requested: {
-          type: Boolean,
-          readOnly: true,
-          value: false
-        },
-        
-        loading: {
-          type: Boolean,
-          readOnly: true,
-          value: false
-        },
-        
-        pedigree: {
-          type: Object
-        }
-        
-      },
+      static get properties() {
+        return {
+          personId: {
+            type: String,
+            observer: '_personIdChanged',
+            reflectToAttribute: true
+          },
+          loading: {
+            type: Boolean,
+            readOnly: true,
+            value: false,
+            notify: true
+          },
+          pedigree: Object
+        };
+      }
       
-      behaviors: [FSBehavior],
-      
-      ready: function(){
-        this._loadAncestry();
-      },
-      
-      attached: function(){
-        var self = this;
-        Polymer.dom(this.$.pedigree).querySelectorAll('fs-pedigree-person').forEach(function($person){
-          self.listen($person, 'tap', '_personTap');
+      connectedCallback() {
+        super.connectedCallback();
+        this.shadowRoot.querySelectorAll('fs-pedigree-person').forEach(($person) => {
+          Polymer.Gestures.addListener($person, 'tap', (e) => {
+            this._personTap(e);
+          });
         });
-      },
+      }
       
-      _personTap: function(event){
+      _updateLoading(e) {
+        this._setLoading(e.detail.value);
+      }
+      
+      _personTap(event) {
         var person = event.currentTarget.person;
         if(person && person.id){
           event.detail.personId = person.id;
-          this.fire('person-tap', event.detail);
+          this.dispatchEvent(new CustomEvent('person-tap', {
+            detail: event.detail,
+            bubbles: true,
+            composed: true
+          }));
         }
-      },
+      }
       
-      _authenticatedChanged: function(event){
-        if(event.detail.value){
-          this._loadAncestry();
+      _personIdChanged() {
+        this.pedigree = {};
+      }
+      
+      _computeUrl() {
+        if(this.personId) {
+          return `/platform/tree/ancestry?person=${this.personId}`;
         }
-      },
+      }
       
-      _personIdChanged: function(){
-        this._setRequested(false);
-        this._loadAncestry();
-      },
-      
-      _loadAncestry: function(){
-        var self = this;
-        if(self.isAuthenticated() && self.personId && !self.loading && !self.requested){
-          self._setRequested(true);
-          self._setLoading(true);
-          self.pedigree = {};
-          self.getClient().get('/platform/tree/ancestry?person=' + self.personId, function(error, response){
-            self._setLoading(false);
-            if(response && response.statusCode === 200){
-              self._setupPedigree(response.data.persons);
-            } else {
-              console.log(error || response.statusCode);
-            }
-          });
+      _handleResponse(e) {
+        if(e.detail.response.data) {
+          this._setupPedigree(e.detail.response.data.persons);
         }
-      },
+      }
       
-      _setupPedigree: function(persons){
+      _setupPedigree(persons) {
         this.pedigree = {};
         for(var i = 0; i < persons.length; i++){
           this.set('pedigree.' + persons[i].display.ascendancyNumber, persons[i]);
         }
       }
-      
-    });
-  
+    }
+    
+    customElements.define(FSPedigree.is, FSPedigree);
   </script>
-
 </dom-module>

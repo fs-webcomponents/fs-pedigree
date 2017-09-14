@@ -14,15 +14,14 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "fs-client": "fs-webcomponents/fs-client#^3.0.0",
-    "fs-behavior": "fs-webcomponents/fs-behavior#^3.0.0",
+    "fs-request": "fs-webcomponents/fs-request#v4",
+    "fs-api-aware": "fs-webcomponents/fs-api-aware",
+    "fs-person-chip": "fs-webcomponents/fs-person-chip#v4",
     "polymer": "Polymer/polymer#^2.0.0",
-    "fs-person-chip": "fs-webcomponents/fs-person-chip#^3.0.0",
     "paper-card": "PolymerElements/paper-card#^2.0.0"
   },
   "devDependencies": {
-    "iron-component-page": "PolymerElements/iron-component-page#^3.0.0",
-    "fs-signin": "fs-webcomponents/fs-signin#^3.0.0",
+    "fs-signin": "fs-webcomponents/fs-signin#v4",
     "paper-input": "PolymerElements/paper-input#^2.0.0"
   }
 }

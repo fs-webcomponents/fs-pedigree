@@ -1,4 +1,4 @@
-<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../polymer/polymer-element.html">
 <link rel="import" href="../paper-card/paper-card.html">
 <link rel="import" href="../fs-person-chip/fs-person-chip.html">
 
@@ -10,7 +10,8 @@ Basic example:
     <fs-pedigree-person person-id="PPP-PPPP"></fs-pedigree-person>
 
 @group FamilySearch Elements
-@element fs-pedigree-person
+@customElement
+@polymer
 @demo demo/index.html
 -->
 <dom-module id="fs-pedigree-person">
@@ -26,18 +27,16 @@ Basic example:
       </div>
     </paper-card>
   </template>
-
   <script>
-    Polymer({
-  
-      is: 'fs-pedigree-person',
-      
-      properties: {
-        person: Object,
-        personId: String
+    class FSPedigreePerson extends Polymer.Element {
+      static get is() { return 'fs-pedigree-person'; }
+      static get properties() {
+        return {
+          person: Object,
+          personId: String
+        };
       }
-      
-    });
+    }
+    customElements.define(FSPedigreePerson.is, FSPedigreePerson);
   </script>
-
 </dom-module>
