@@ -1,6 +1,6 @@
 # fs-pedigree
 
-[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://beta.webcomponents.org/element/fs-webcomponents/fs-pedigree)
+[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/fs-webcomponents/fs-pedigree)
 
 Display a FamilySearch person's pedigree.
 
