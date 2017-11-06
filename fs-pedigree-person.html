@@ -27,10 +27,10 @@ Basic example:
     </style>
     <paper-card>
       <div class="card-content">
-        <template is="dom-if" if="{{_personExists}}">
+        <template is="dom-if" if="{{!_addPerson}}">
           <fs-person-chip person-id="{{personId}}" person="{{person}}"></fs-person-chip>
         </template>
-        <template is="dom-if" if="{{!_personExists}}">
+        <template is="dom-if" if="{{_addPerson}}">
           <fs-person-chip person-id="{{personId}}" person="{{person}}">
             <paper-button>+ Add Person</paper-button>
           </fs-person-chip>
@@ -45,15 +45,19 @@ Basic example:
         return {
           person: Object,
           personId: String,
-          _personExists: {
+          addPerson: {
+            type: Boolean,
+            value: false
+          },
+          _addPerson: {
             type: Boolean,
             value: false,
-            computed: '_calculatePersonExists(person)'
+            computed: '_calculateAddPerson(addPerson, person)'
           }
         };
       }
-      _calculatePersonExists(person) {
-        return !!person;
+      _calculateAddPerson(addPerson, person) {
+        return addPerson && !person;
       }
     }
     customElements.define(FSPedigreePerson.is, FSPedigreePerson);
