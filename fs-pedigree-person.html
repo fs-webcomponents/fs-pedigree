@@ -1,4 +1,5 @@
 <link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../polymer/lib/elements/dom-if.html">
 <link rel="import" href="../paper-card/paper-card.html">
 <link rel="import" href="../fs-person-chip/fs-person-chip.html">
 
@@ -20,10 +21,20 @@ Basic example:
       :host, paper-card {
         display: block
       }
+      paper-button {
+        font-size: .8em;
+      }
     </style>
     <paper-card>
       <div class="card-content">
-        <fs-person-chip person-id="{{personId}}" person="{{person}}"></fs-person-chip>
+        <template is="dom-if" if="{{_personExists}}">
+          <fs-person-chip person-id="{{personId}}" person="{{person}}"></fs-person-chip>
+        </template>
+        <template is="dom-if" if="{{!_personExists}}">
+          <fs-person-chip person-id="{{personId}}" person="{{person}}">
+            <paper-button>+ Add Person</paper-button>
+          </fs-person-chip>
+        </template>
       </div>
     </paper-card>
   </template>
@@ -33,8 +44,16 @@ Basic example:
       static get properties() {
         return {
           person: Object,
-          personId: String
+          personId: String,
+          _personExists: {
+            type: Boolean,
+            value: false,
+            computed: '_calculatePersonExists(person)'
+          }
         };
+      }
+      _calculatePersonExists(person) {
+        return !!person;
       }
     }
     customElements.define(FSPedigreePerson.is, FSPedigreePerson);
