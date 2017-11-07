@@ -171,13 +171,11 @@ Display a FamilySearch person's pedigree. Currently it only supports displaying
             // An existing person was clicked
             if($person.person && $person.person.id) {
               this._personTap($person.person.id, e);
-              e.stopPropagation();
             }
             
             // An "+ Add Person" button was clicked
             else if($person.addPerson) {
               this._addPerson($person, e);
-              e.stopPropagation();
             }
           });
         });
