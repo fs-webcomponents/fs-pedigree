@@ -85,6 +85,7 @@ Display a FamilySearch person's pedigree. Currently it only supports displaying
       }
     </style>
     <fs-request
+      id="request"
       auto
       client-name="[[clientName]]"
       require-authentication
@@ -180,6 +181,10 @@ Display a FamilySearch person's pedigree. Currently it only supports displaying
             }
           });
         });
+      }
+      
+      reload() {
+        this.$.request.generateRequest();
       }
       
       _updateLoading(e) {
