@@ -271,12 +271,13 @@ Display a FamilySearch person's pedigree. Currently it only supports displaying
       
       _setupPedigree(persons) {
         this.pedigree = {};
-        // TODO: make sure persons exists
-        for(var i = 0; i < persons.length; i++){
-          this.set('pedigree.' + persons[i].display.ascendancyNumber, persons[i]);
+        if(Array.isArray(persons)) {
+          for(var i = 0; i < persons.length; i++){
+            this.set('pedigree.' + persons[i].display.ascendancyNumber, persons[i]);
+          }
+          this._resetAddPersons();
+          this._calculateAddPerson(1);
         }
-        this._resetAddPersons();
-        this._calculateAddPerson(1);
       }
       
       _getPersonElement(position) {
