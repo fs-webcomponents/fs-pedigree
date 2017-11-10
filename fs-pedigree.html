@@ -32,6 +32,14 @@ Display a FamilySearch person's pedigree. Currently it only supports displaying
         justify-content: space-around;
       }
       
+      .column:first-of-type {
+        padding-left: 0;
+      }
+      
+      .column:last-of-type {
+        padding-right: 0;
+      }
+      
       fs-pedigree-person {
         width: var(--fs-pedigree-person-width, 250px);
         margin: var(--fs-pedigree-person-vertical-margin, 8px) 0;
@@ -263,6 +271,7 @@ Display a FamilySearch person's pedigree. Currently it only supports displaying
       
       _setupPedigree(persons) {
         this.pedigree = {};
+        // TODO: make sure persons exists
         for(var i = 0; i < persons.length; i++){
           this.set('pedigree.' + persons[i].display.ascendancyNumber, persons[i]);
         }
