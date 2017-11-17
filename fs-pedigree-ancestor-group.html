@@ -15,7 +15,29 @@
         display: block;
         position: absolute;
       }
+      
+      svg {
+        height: 100%;
+        width: 100%;
+      }
+      
+      .line {
+        display: none;
+        stroke: #333;
+        stroke-width: 1px;
+        fill: none;
+      }
     </style>
+    <svg id="svg">
+      <g>
+        <path id="line2" class="line"></path>
+        <path id="line3" class="line"></path>
+        <path id="line4" class="line"></path>
+        <path id="line5" class="line"></path>
+        <path id="line6" class="line"></path>
+        <path id="line7" class="line"></path>
+      </g>
+    </svg>
     <div id="couples"></div>
     <fs-request
       id="request"
@@ -32,12 +54,29 @@
     const COUPLE_HEIGHT = 115;
     const COUPLE_SPACING = 30;
     
+    const COUPLE_WIDTH_HALF = COUPLE_WIDTH / 2;
     const COUPLE_HEIGHT_AND_SPACING = COUPLE_HEIGHT + COUPLE_SPACING;
     const COUPLE_HEIGHT_AND_SPACING_HALF = COUPLE_HEIGHT_AND_SPACING / 2;
-    const COUPLE_COL1_LEFT = COUPLE_WIDTH * .66;
-    const COUPLE_COL2_LEFT = COUPLE_COL1_LEFT + COUPLE_WIDTH + COUPLE_SPACING;
     
-    const TOTAL_WIDTH = COUPLE_COL2_LEFT + COUPLE_WIDTH;
+    const COUPLE_COL2_LEFT = COUPLE_WIDTH * .66;
+    const COUPLE_COL3_LEFT = COUPLE_COL2_LEFT + COUPLE_WIDTH + COUPLE_SPACING;
+    
+    const COUPLE_ROOT_TOP = (2 * COUPLE_HEIGHT_AND_SPACING) - COUPLE_HEIGHT_AND_SPACING_HALF;
+    const COUPLE_2_TOP = COUPLE_HEIGHT_AND_SPACING - COUPLE_HEIGHT_AND_SPACING_HALF;
+    const COUPLE_3_TOP = (3 * COUPLE_HEIGHT_AND_SPACING) - COUPLE_HEIGHT_AND_SPACING_HALF;
+    const COUPLE_4_TOP = 0;
+    const COUPLE_5_TOP = COUPLE_HEIGHT_AND_SPACING;
+    const COUPLE_6_TOP = 2 * COUPLE_HEIGHT_AND_SPACING;
+    const COUPLE_7_TOP = 3 * COUPLE_HEIGHT_AND_SPACING;
+    
+    const LINE_COL2_LEFT = COUPLE_WIDTH_HALF;
+    const LINE_COL2_HEIGHT = COUPLE_HEIGHT / 2 + COUPLE_SPACING;
+    const LINE_COL2_WIDTH = COUPLE_COL2_LEFT - LINE_COL2_LEFT;
+    const LINE_COL3_LEFT = COUPLE_COL2_LEFT + COUPLE_WIDTH_HALF;
+    const LINE_COL3_HEIGHT = COUPLE_2_TOP - (COUPLE_HEIGHT / 2);
+    const LINE_COL3_WIDTH = COUPLE_WIDTH_HALF + COUPLE_SPACING;
+    
+    const TOTAL_WIDTH = COUPLE_COL3_LEFT + COUPLE_WIDTH;
     const TOTAL_HEIGHT = (3 * COUPLE_HEIGHT_AND_SPACING) + COUPLE_HEIGHT;
     
     class FsPedigreeAncestorGroup extends FSApiAwareMixin(Polymer.Element) {
@@ -82,56 +121,55 @@
           _couples: {
             type: Array,
             value: function(){
-              // TODO: remove the couplePosition property
               return [
                 {
                   couplePosition: 1,
                   husbandAhnen: 2,
                   wifeAhnen: 3,
                   left: 0,
-                  top: (2 * COUPLE_HEIGHT_AND_SPACING) - COUPLE_HEIGHT_AND_SPACING_HALF
+                  top: COUPLE_ROOT_TOP
                 },
                 {
                   couplePosition: 2,
                   husbandAhnen: 4,
                   wifeAhnen: 5,
-                  left: COUPLE_COL1_LEFT,
-                  top: COUPLE_HEIGHT_AND_SPACING - COUPLE_HEIGHT_AND_SPACING_HALF
+                  left: COUPLE_COL2_LEFT,
+                  top: COUPLE_2_TOP
                 },
                 {
                   couplePosition: 3,
                   husbandAhnen: 6,
                   wifeAhnen: 7,
-                  left: COUPLE_COL1_LEFT,
-                  top: (3 * COUPLE_HEIGHT_AND_SPACING) - COUPLE_HEIGHT_AND_SPACING_HALF
+                  left: COUPLE_COL2_LEFT,
+                  top: COUPLE_3_TOP
                 },
                 {
                   couplePosition: 4,
                   husbandAhnen: 8,
                   wifeAhnen: 9,
-                  left: COUPLE_COL2_LEFT,
-                  top: 0
+                  left: COUPLE_COL3_LEFT,
+                  top: COUPLE_4_TOP
                 },
                 {
                   couplePosition: 5,
                   husbandAhnen: 10,
                   wifeAhnen: 11,
-                  left: COUPLE_COL2_LEFT,
-                  top: COUPLE_HEIGHT_AND_SPACING
+                  left: COUPLE_COL3_LEFT,
+                  top: COUPLE_5_TOP
                 },
                 {
                   couplePosition: 6,
                   husbandAhnen: 12,
                   wifeAhnen: 13,
-                  left: COUPLE_COL2_LEFT,
-                  top: 2 * COUPLE_HEIGHT_AND_SPACING
+                  left: COUPLE_COL3_LEFT,
+                  top: COUPLE_6_TOP
                 },
                 {
                   couplePosition: 7,
                   husbandAhnen: 14,
                   wifeAhnen: 15,
-                  left: COUPLE_COL2_LEFT,
-                  top: 3 * COUPLE_HEIGHT_AND_SPACING
+                  left: COUPLE_COL3_LEFT,
+                  top: COUPLE_7_TOP
                 }
               ];
             }
@@ -141,13 +179,15 @@
       
       ready() {
         super.ready();
+        this.reload();
         this.style.width = TOTAL_WIDTH + 'px';
         this.style.height = TOTAL_HEIGHT + 'px';
-        this.reload();
+        this._drawLines();
       }
       
       reload() {
         this._clearCouples();
+        this._hideLines();
         this.$.request.generateRequest();
       }
       
@@ -181,7 +221,9 @@
       _displayCouples() {
         this._couples.forEach((coupleData, i) => {
           if(coupleData.wife || coupleData.husband) {
-            const coupleElement = new FsPedigreeCouple();
+            
+            // Create the couple, position them, and add to the DOM
+            const coupleElement = document.createElement('fs-pedigree-couple');
             coupleElement.husband = coupleData.husband;
             coupleElement.wife = coupleData.wife;
             coupleElement.clientName = this.clientName;
@@ -189,8 +231,13 @@
             coupleElement.style.top = coupleData.top + 'px';
             coupleElement.style.width = COUPLE_WIDTH + 'px';
             coupleElement.style.position = 'absolute';
-            // coupleElement.style.height = COUPLE_HEIGHT;
+            coupleElement.style.height = COUPLE_HEIGHT + 'px';
             this.$.couples.appendChild(coupleElement);
+            
+            // Show the line
+            if(coupleData.couplePosition > 1) {
+              this.$[`line${coupleData.couplePosition}`].style.display = 'block';
+            }
           }
         });
       }
@@ -205,6 +252,45 @@
           couple.husband = null;
         });
         this.$.couples.innerHTML = '';
+      }
+      
+      /**
+       * Hide all lines. The default display value is none (via CSS) so here
+       * we just clear the value we set when showing the line.
+       */
+      _hideLines() {
+        this.$.svg.querySelectorAll('path').forEach((path) => {
+          path.style.display = '';
+        });
+      }
+      
+      /**
+       * Draw lines but don't modify their display
+       */
+      _drawLines() {
+        this._drawLine(2, LINE_COL2_LEFT, COUPLE_ROOT_TOP, -LINE_COL2_HEIGHT, LINE_COL2_WIDTH);
+        this._drawLine(3, LINE_COL2_LEFT, COUPLE_ROOT_TOP + COUPLE_HEIGHT, LINE_COL2_HEIGHT, LINE_COL2_WIDTH);
+        this._drawLine(4, LINE_COL3_LEFT, COUPLE_2_TOP, -LINE_COL3_HEIGHT, LINE_COL3_WIDTH);
+        this._drawLine(5, LINE_COL3_LEFT, COUPLE_2_TOP + COUPLE_HEIGHT, LINE_COL3_HEIGHT, LINE_COL3_WIDTH);
+        this._drawLine(6, LINE_COL3_LEFT, COUPLE_3_TOP, -LINE_COL3_HEIGHT, LINE_COL3_WIDTH);
+        this._drawLine(7, LINE_COL3_LEFT, COUPLE_3_TOP + COUPLE_HEIGHT, LINE_COL3_HEIGHT, LINE_COL3_WIDTH);
+      }
+      
+      /**
+       * Create a path element and contruct it's path
+       */
+      _drawLine(num, startX, startY, vertical, horizontal) {
+        const line = this.$[this._lineId(num)];
+        if(line) {
+          line.setAttribute('d', `M ${startX} ${startY} v ${vertical} h ${horizontal}`);
+        }
+      }
+      
+      /**
+       * Given a line number, return it's id
+       */
+      _lineId(num) {
+        return `line${num}`;
       }
     }
     
