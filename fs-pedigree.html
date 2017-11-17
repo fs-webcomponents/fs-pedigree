@@ -71,11 +71,19 @@ Display a FamilySearch person's pedigree.
         group.root = true;
         group.clientName = this.clientName;
         this.$.groups.appendChild(group);
+        
+        this.addEventListener('extend-couple', (e) => {
+          console.log('pedigree', e);
+        });
       }
       
       reload() {
         // TODO: How will this be done?
         // this.$.request.generateRequest();
+      }
+      
+      _addGroup(personId, spouseId, root) {
+        
       }
       
     }
