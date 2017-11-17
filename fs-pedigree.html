@@ -16,6 +16,7 @@ Display a FamilySearch person's pedigree.
     <style>
       :host {
         display: block;
+        position: relative;
       }
     </style>
     <div id="groups"></div>
@@ -64,7 +65,7 @@ Display a FamilySearch person's pedigree.
         super.ready();
         
         // Start setup by appending the root group
-        const group = new FsPedigreeAncestorGroup();
+        const group = document.createElement('fs-pedigree-ancestor-group');
         group.personId = this.personId;
         group.spouseId = this.spouseId;
         group.root = true;
