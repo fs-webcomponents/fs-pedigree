@@ -234,6 +234,10 @@
             coupleElement.style.height = COUPLE_HEIGHT + 'px';
             this.$.couples.appendChild(coupleElement);
             
+            if(coupleData.couplePosition > 3) {
+              coupleElement.extend = true;
+            }
+            
             // Show the line
             if(coupleData.couplePosition > 1) {
               this.$[`line${coupleData.couplePosition}`].style.display = 'block';
