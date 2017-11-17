@@ -1,0 +1,154 @@
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../fs-request/fs-request.html">
+<link rel="import" href="../fs-api-aware/fs-api-aware.html">
+
+<!--
+@customElement
+@polymer
+@demo demo/index.html
+-->
+<dom-module id="fs-pedigree-ancestor-group">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <fs-request
+      id="request"
+      loading="{{loading}}"
+      require-authentication
+      url="{{_computeRequestUrl(personId, spouseId)}}"
+      on-response="_handleResponse"></fs-request>
+  </template>
+
+  <script>
+    class FsPedigreeAncestorGroup extends FSApiAwareMixin(Polymer.Element) {
+  
+      static get is() { return 'fs-pedigree-ancestor-group'; }
+      
+      static get properties() {
+        return {
+          
+          /** ID of the root person */
+          personId: {
+            type: String
+          },
+          
+          /** 
+           * ID of the root person's spouse, if known. When not specified, the
+           * API will automatically choose a spouse. You may set this property
+           * to specify which spouse will be loaded.
+           */
+          spouseId: {
+            type: String,
+            value: ''
+          },
+          
+          /**
+           * Whether this is the root group. The root group displays the root
+           * couple and two additional generations. Non-root groups don't display
+           * the root couple (they're already displayed) and just display the
+           * two additional generatiosn.
+           */
+          root: {
+            type: Boolean,
+            value: false
+          },
+          
+          /** Whether this group of ancestors is loading */
+          loading: {
+            type: Boolean,
+            value: false
+          },
+          
+          _couples: {
+            type: Array,
+            value: function(){
+              return {};
+            }
+          }
+        };
+      }
+      
+      /** Map ahnen numbers to couple group numbers */
+      static get _couplePositions() {
+        return [
+          {
+            couplePosition: 1,
+            husbandAhnen: 2,
+            wifeAhnen: 3
+          },
+          {
+            couplePosition: 2,
+            husbandAhnen: 4,
+            wifeAhnen: 5
+          },
+          {
+            couplePosition: 3,
+            husbandAhnen: 6,
+            wifeAhnen: 7
+          },
+          {
+            couplePosition: 4,
+            husbandAhnen: 8,
+            wifeAhnen: 9
+          },
+          {
+            couplePosition: 5,
+            husbandAhnen: 10,
+            wifeAhnen: 11
+          },
+          {
+            couplePosition: 6,
+            husbandAhnen: 12,
+            wifeAhnen: 13
+          },
+          {
+            couplePosition: 7,
+            husbandAhnen: 14,
+            wifeAhnen: 15
+          }
+        ];
+      }
+      
+      ready() {
+        super.ready();
+        this.reload();
+      }
+      
+      reload() {
+        this._couples = {};
+        this.$.request.generateRequest();
+      }
+      
+      _computeRequestUrl(personId, spouseId) {
+        return `/platform/tree/ancestry?person=${personId}&spouse=${spouseId}&generations=2`;
+      }
+      
+      _handleResponse(e) {
+        const response = e.detail.response;
+        if(response && response.data && response.data.persons) {
+          
+          // Put persons into a map by ahnen number
+          const persons = {};
+          response.data.persons.forEach((person) => {
+            persons[person.display.ascendancyNumber] = person;
+          });
+          
+          // Construct couples
+          FsPedigreeAncestorGroup._couplePositions.forEach((positions) => {
+            const husband = persons[positions.husbandAhnen];
+            const wife = persons[positions.wifeAhnen];
+            if(husband || wife) {
+              this._couples[positions.couplePosition] = { husband, wife };
+            }
+          });
+        }
+      }
+      
+    }
+    
+    customElements.define(FsPedigreeAncestorGroup.is, FsPedigreeAncestorGroup);
+  </script>
+</dom-module>
