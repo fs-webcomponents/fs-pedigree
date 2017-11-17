@@ -65,15 +65,11 @@ Display a FamilySearch person's pedigree.
         super.ready();
         
         // Start setup by appending the root group
-        const group = document.createElement('fs-pedigree-ancestor-group');
-        group.personId = this.personId;
-        group.spouseId = this.spouseId;
-        group.root = true;
-        group.clientName = this.clientName;
-        this.$.groups.appendChild(group);
+        this._addGroup(this.personId, this.spouseId, true);
         
         this.addEventListener('extend-couple', (e) => {
           console.log('pedigree', e);
+          this._addGroup(e.detail.husbandId, e.detail.wifeId, false, e.detail.left, e.detail.top);
         });
       }
       
@@ -82,8 +78,19 @@ Display a FamilySearch person's pedigree.
         // this.$.request.generateRequest();
       }
       
-      _addGroup(personId, spouseId, root) {
-        
+      _addGroup(personId, spouseId, root, left, top) {
+        const group = document.createElement('fs-pedigree-ancestor-group');
+        group.personId = personId;
+        group.spouseId = spouseId;
+        group.root = root;
+        group.clientName = this.clientName;
+        if(left) {
+          group.style.left = left;
+        }
+        if(top) {
+          group.style.top = top;
+        }
+        this.$.groups.appendChild(group);
       }
       
     }

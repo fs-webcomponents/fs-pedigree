@@ -78,14 +78,16 @@
        * @event extend-couple
        * @param {{husbandId:string}} ID of the husband.
        * @param {{wifeId:string}} ID of the wife.
+       * @param {{left:string}} CSS left property of this couple
+       * @param {{top:string}} CSS top property of this couple
        */
       _extendEvent() {
         this.dispatchEvent(new CustomEvent('extend-couple', {
           detail: {
             husbandId: this.husband ? this.husband.id : undefined,
             wifeId: this.wife ? this.wife.id : undefined,
-            x: this.style.left,
-            y: this.style.top
+            left: this.style.left,
+            top: this.style.top
           },
           // We want this event to go through the ancestor group and be caught
           // by the pedigree so we set bubbles and composed to true.
