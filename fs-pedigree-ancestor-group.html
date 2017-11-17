@@ -1,6 +1,7 @@
 <link rel="import" href="../polymer/polymer-element.html">
 <link rel="import" href="../fs-request/fs-request.html">
 <link rel="import" href="../fs-api-aware/fs-api-aware.html">
+<link rel="import" href="fs-pedigree-couple.html">
 
 <!--
 @customElement
@@ -14,6 +15,7 @@
         display: block;
       }
     </style>
+    <div id="couples"></div>
     <fs-request
       id="request"
       loading="{{loading}}"
@@ -65,51 +67,46 @@
           _couples: {
             type: Array,
             value: function(){
-              return {};
+              return [
+                {
+                  couplePosition: 1,
+                  husbandAhnen: 2,
+                  wifeAhnen: 3
+                },
+                {
+                  couplePosition: 2,
+                  husbandAhnen: 4,
+                  wifeAhnen: 5
+                },
+                {
+                  couplePosition: 3,
+                  husbandAhnen: 6,
+                  wifeAhnen: 7
+                },
+                {
+                  couplePosition: 4,
+                  husbandAhnen: 8,
+                  wifeAhnen: 9
+                },
+                {
+                  couplePosition: 5,
+                  husbandAhnen: 10,
+                  wifeAhnen: 11
+                },
+                {
+                  couplePosition: 6,
+                  husbandAhnen: 12,
+                  wifeAhnen: 13
+                },
+                {
+                  couplePosition: 7,
+                  husbandAhnen: 14,
+                  wifeAhnen: 15
+                }
+              ];
             }
           }
         };
-      }
-      
-      /** Map ahnen numbers to couple group numbers */
-      static get _couplePositions() {
-        return [
-          {
-            couplePosition: 1,
-            husbandAhnen: 2,
-            wifeAhnen: 3
-          },
-          {
-            couplePosition: 2,
-            husbandAhnen: 4,
-            wifeAhnen: 5
-          },
-          {
-            couplePosition: 3,
-            husbandAhnen: 6,
-            wifeAhnen: 7
-          },
-          {
-            couplePosition: 4,
-            husbandAhnen: 8,
-            wifeAhnen: 9
-          },
-          {
-            couplePosition: 5,
-            husbandAhnen: 10,
-            wifeAhnen: 11
-          },
-          {
-            couplePosition: 6,
-            husbandAhnen: 12,
-            wifeAhnen: 13
-          },
-          {
-            couplePosition: 7,
-            husbandAhnen: 14,
-            wifeAhnen: 15
-          }
-        ];
       }
       
       ready() {
@@ -118,7 +115,7 @@
       }
       
       reload() {
-        this._couples = {};
+        this._clearCouples();
         this.$.request.generateRequest();
       }
       
@@ -137,16 +134,41 @@
           });
           
           // Construct couples
-          FsPedigreeAncestorGroup._couplePositions.forEach((positions) => {
-            const husband = persons[positions.husbandAhnen];
-            const wife = persons[positions.wifeAhnen];
-            if(husband || wife) {
-              this._couples[positions.couplePosition] = { husband, wife };
-            }
+          this._couples.forEach((couple) => {
+            couple.husband = persons[couple.husbandAhnen];
+            couple.wife = persons[couple.wifeAhnen];
           });
+          
+          this._displayCouples();
         }
       }
       
+      /**
+       * Create couple elements and add them to the DOM.
+       */
+      _displayCouples() {
+        this._couples.forEach((coupleData) => {
+          if(coupleData.wife || coupleData.husband) {
+            const coupleElement = new FsPedigreeCouple();
+            coupleElement.husband = coupleData.husband;
+            coupleElement.wife = coupleData.wife;
+            coupleElement.clientName = this.clientName;
+            this.$.couples.appendChild(coupleElement);
+          }
+        });
+      }
+      
+      /**
+       * Remove persons from the couple config object and
+       * clear couples from the DOM.
+       */
+      _clearCouples() {
+        this._couples.forEach((couple) => {
+          couple.wife = null;
+          couple.husband = null;
+        });
+        this.$.couples.innerHTML = '';
+      }
     }
     
     customElements.define(FsPedigreeAncestorGroup.is, FsPedigreeAncestorGroup);

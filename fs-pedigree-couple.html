@@ -1,0 +1,49 @@
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../paper-card/paper-card.html">
+<link rel="import" href="../fs-person-chip/fs-person-chip.html">
+<link rel="import" href="../polymer/lib/elements/dom-if.html">
+
+<!--
+    
+@customElement
+@polymer
+@demo demo/index.html
+-->
+<dom-module id="fs-pedigree-couple">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      paper-card {
+        width: 250px;
+      }
+    </style>
+    <paper-card>
+      <div class="card-content">
+        <template is="dom-if" if="{{husband}}">
+          <fs-person-chip client-name="[[clientName]]" person="[[husband]]"></fs-person-chip>
+        </template>
+        <template is="dom-if" if="{{wife}}">
+          <fs-person-chip client-name="[[clientName]]" person="[[wife]]"></fs-person-chip>
+        </template>
+      </div>
+    </paper-card>
+  </template>
+  <script>
+    class FsPedigreeCouple extends FSApiAwareMixin(Polymer.Element) {
+  
+      static get is() { return 'fs-pedigree-couple'; }
+      
+      static get properties() {
+        return {
+          husband: Object,
+          wife: Object,
+        };
+      }
+      
+    }
+    
+    customElements.define(FsPedigreeCouple.is, FsPedigreeCouple);
+  </script>
+</dom-module>
