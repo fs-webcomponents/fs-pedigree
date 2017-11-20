@@ -17,6 +17,7 @@ Display a FamilySearch person's pedigree.
       :host {
         display: block;
         position: relative;
+        cursor: move;
       }
     </style>
     <div id="groups"></div>
@@ -57,6 +58,32 @@ Display a FamilySearch person's pedigree.
           addPersons: {
             type: Boolean,
             value: false
+          },
+          
+          /** Whether we're panning */
+          _panning: {
+            type: Boolean,
+            value: false
+          },
+          
+          /** Where panning started */
+          _startPanX: {
+            type: Number,
+            value: 0
+          },
+          _startPanY: {
+            type: Number,
+            value: 0
+          },
+          
+          /** How much we've panned */
+          _netPanX: {
+            type: Number,
+            value: 0
+          },
+          _netPanY: {
+            type: Number,
+            value: 0
           }
         };
       }
@@ -66,6 +93,11 @@ Display a FamilySearch person's pedigree.
         
         // Start setup by appending the root group
         this._addGroup(this.personId, this.spouseId, true);
+        
+        // Enable panning
+        this.addEventListener('mousedown', this._startPanning.bind(this));
+        this.addEventListener('mouseup', this._endPanning.bind(this));
+        this.addEventListener('mousemove', this._pan.bind(this));
       }
       
       reload() {
@@ -98,6 +130,33 @@ Display a FamilySearch person's pedigree.
             group.remove();
           }
         });
+      }
+      
+      _startPanning(e) {
+        this._panning = true;
+        this._startPanX = e.pageX;
+        this._startPanY = e.pageY;
+      }
+      
+      _endPanning(e) {
+        this._panning = false;
+        this._startPanX = 0;
+        this._startPanY = 0;
+      }
+      
+      _pan(e) {
+        if(!this._panning) {
+          return;
+        }
+        
+        // Pan
+        this._netPanX += e.pageX - this._startPanX;
+        this._netPanY += e.pageY - this._startPanY;
+        this.style.transform = `translate(${this._netPanX}px, ${this._netPanY}px)`;
+        
+        // Update starting position for next calculation
+        this._startPanX = e.pageX;
+        this._startPanY = e.pageY;
       }
       
     }
