@@ -87,7 +87,9 @@ Display a FamilySearch person's pedigree.
         if(left && top) {
           group.positionWithCouple(left, top);
         }
-        this.$.groups.appendChild(group);
+        // We want the new groups to be layered underneath previous groups
+        // so we add the new groups before the existing groups in the DOM.
+        this.$.groups.prepend(group);
       }
       
     }
