@@ -263,7 +263,8 @@
        */
       _displayCouples() {
         this._couples.forEach((coupleData, i) => {
-          if(coupleData.wife || coupleData.husband) {
+          // if(this.addPersons || coupleData.wife || coupleData.husband) {
+          if(this._displayCouple(coupleData)) {
             
             // Create the couple, position them, and add to the DOM.
             // Don't add the 1st couple if we're not a root node.
@@ -296,6 +297,15 @@
             }
           }
         });
+      }
+      
+      /**
+       * Calculate whether a couple group should be displayed.
+       * They are displayed when either the husband or wife is present
+       * or if addPersons is true and their child is present.
+       */
+      _displayCouple(couple) {
+        return this.addPersons || couple.wife || couple.husband;
       }
       
       /**
