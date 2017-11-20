@@ -49,8 +49,11 @@
         </template>
       </div>
     </paper-card>
-    <template is="dom-if" if="{{extend}}">
+    <template is="dom-if" if="{{_showExtendButton(extend, _extended)}}">
       <paper-fab mini icon="chevron-right" on-click="_extendEvent"></paper-fab>
+    </template>
+    <template is="dom-if" if="{{_showCollapseButton(extend, _extended)}}">
+      <paper-fab mini icon="chevron-left" on-click="_collapseEvent"></paper-fab>
     </template>
   </template>
   <script>
@@ -64,13 +67,27 @@
           wife: Object,
           
           /**
-           * Whether to show the button to extend the pedgree from this couple
+           * Whether to show the button to extend the pedigree from this couple
            */
           extend: {
             type: Boolean,
             value: false
+          },
+          
+          /** Whether the pedigree is currently extended from this couple */
+          _extended: {
+            type: Boolean,
+            value: false
           }
         };
+      }
+      
+      _showExtendButton(extend, _extended) {
+        return extend && !_extended;
+      }
+      
+      _showCollapseButton(extend, _extended) {
+        return extend && _extended;
       }
       
       /**
@@ -83,18 +100,46 @@
        * @param {{top:string}} CSS top property of this couple
        */
       _extendEvent() {
+        this._extended = true;
         this.dispatchEvent(new CustomEvent('extend-couple', {
-          detail: {
-            husbandId: this.husband ? this.husband.id : undefined,
-            wifeId: this.wife ? this.wife.id : undefined,
-            left: this.style.left,
-            top: this.style.top
-          },
+          detail: this._eventDetail(),
           // We want this event to go through the ancestor group and be caught
           // by the pedigree so we set bubbles and composed to true.
           bubbles: true,
           composed: true
         }));
+      }
+      
+      /**
+       * Fired when the collapse button is clicked.
+       *
+       * @event collapse-couple
+       * @param {{husbandId:string}} ID of the husband.
+       * @param {{wifeId:string}} ID of the wife.
+       * @param {{left:string}} CSS left property of this couple
+       * @param {{top:string}} CSS top property of this couple
+       */
+      _collapseEvent() {
+        this._extended = false;
+        this.dispatchEvent(new CustomEvent('collapse-couple', {
+          detail: this._eventDetail(),
+          // We want this event to go through the ancestor group and be caught
+          // by the pedigree so we set bubbles and composed to true.
+          bubbles: true,
+          composed: true
+        }));
+      }
+      
+      /**
+       * Gather the event detail information
+       */
+      _eventDetail() {
+        return {
+          husbandId: this.husband ? this.husband.id : undefined,
+          wifeId: this.wife ? this.wife.id : undefined,
+          left: this.style.left,
+          top: this.style.top
+        };
       }
       
     }

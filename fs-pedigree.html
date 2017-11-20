@@ -67,9 +67,14 @@ Display a FamilySearch person's pedigree.
         // Start setup by appending the root group
         this._addGroup(this.personId, this.spouseId, true);
         
+        // Add a new group when the pedigree is extended
         this.addEventListener('extend-couple', (e) => {
-          // We want to position the new group such that the middle is in line
           this._addGroup(e.detail.husbandId, e.detail.wifeId, false, e.detail.level + 1, e.detail.left, e.detail.top);
+        });
+        
+        // Collapse the pedigree when collapse buttons are clicked
+        this.addEventListener('collapse-couple', (e) => {
+          this._collapseTo(e.detail.level);
         });
       }
       
@@ -94,6 +99,13 @@ Display a FamilySearch person's pedigree.
         // We want the new groups to be layered underneath previous groups
         // so we add the new groups before the existing groups in the DOM.
         this.$.groups.prepend(group);
+      }
+      
+      /**
+       * Collapse to the given level by removing all level greater than it.
+       */
+      _collapseTo(level) {
+        this._removeLevels(level + 1);
       }
       
       /**
