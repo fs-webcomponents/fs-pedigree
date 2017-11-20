@@ -117,7 +117,8 @@
           /** Whether this group of ancestors is loading */
           loading: {
             type: Boolean,
-            value: false
+            value: false,
+            notify: true
           },
           
           /** Which level this group represents. */
@@ -125,6 +126,9 @@
             type: Number,
             value: 1
           },
+          
+          /** Pointer to the next ancestor group */
+          _nextGroup: Object,
           
           _couples: {
             type: Array,
@@ -200,6 +204,16 @@
       }
       
       /**
+       * Collapse (remove) this portion of the pedigree.
+       */
+      collapse() {
+        if(this.nextGroup) {
+          this.nextGroup.collapse();
+        }
+        this.remove();
+      }
+      
+      /**
        * Position the group to be in line with the given coordinates of the
        * couple group that was extended.
        * 
@@ -260,12 +274,8 @@
               this.$.couples.appendChild(coupleElement);
               
               // Listen for couple events and modify their details
-              coupleElement.addEventListener('extend-couple', (e) => {
-                this._updateCoupleEvent(e);
-              });
-              coupleElement.addEventListener('collapse-couple', (e) => {
-                this._updateCoupleEvent(e);
-              });
+              coupleElement.addEventListener('extend-couple', this._extendCouple.bind(this));
+              coupleElement.addEventListener('collapse-couple', this._collapseCouple.bind(this));
               
               if(coupleData.couplePosition > 3) {
                 coupleElement.extend = true;
@@ -282,23 +292,64 @@
       }
       
       /**
+       * Extend the pedigree from the given couple.
+       */
+      _extendCouple(e) {
+        this._collapseCouple(e);
+        const couple = e.target;
+        
+        const position = this._calculateAbsoluteCouplePosition(e);
+        
+        const group = document.createElement('fs-pedigree-ancestor-group');
+        group.personId = e.detail.husbandId;
+        group.spouseId = e.detail.wifeId;
+        group.clientName = this.clientName;
+        group.level = this.level + 1;
+        this.nextGroup = group;
+        group.positionWithCouple(position.left, position.top);
+        group.addEventListener('loading-changed', (e) => {
+          couple.loading = e.detail.value;
+        });
+        
+        // We want the new groups to be layered underneath previous groups
+        // so we add the new group before the existing group in the DOM.
+        this.parentElement.prepend(group);
+      }
+      
+      /**
+       * Collapse the pedigree at the given couple.
+       */
+      _collapseCouple(e) {
+        // Remove higher groups
+        if(this.nextGroup) {
+          this.nextGroup.collapse();
+          this.nextGroup = undefined;
+        }
+        // Revert state of other couples
+        Array.from(this.$.couples.children).forEach((couple) => {
+          if(couple !== e.target) {
+            couple.extended = false;
+          }
+        });
+      }
+      
+      /**
        * Couple events contain information about the position of
        * the couple element. That position is used to position the new
        * ancestor group. However that position is relative to this couple
        * group so here we modify the position to be relative to the
        * pedigree container by adding this element's position to the 
        * couple element's position.
-       *
-       * We also add the current group level.
        */
-      _updateCoupleEvent(e) {
+      _calculateAbsoluteCouplePosition(e) {
         const coupleLeft = parseInt(e.detail.left, 10);
         const thisLeft = this.style.left ? parseInt(this.style.left, 10) : 0;
         const coupleTop = parseInt(e.detail.top, 10);
         const thisTop = this.style.top ? parseInt(this.style.top, 10) : 0;
-        e.detail.left = `${coupleLeft + thisLeft}px`;
-        e.detail.top = `${coupleTop + thisTop}px`;
-        e.detail.level = this.level;
+        return {
+          left: `${coupleLeft + thisLeft}px`,
+          top: `${coupleTop + thisTop}px`
+        };
       }
       
       /**

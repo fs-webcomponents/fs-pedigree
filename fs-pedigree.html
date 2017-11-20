@@ -66,16 +66,6 @@ Display a FamilySearch person's pedigree.
         
         // Start setup by appending the root group
         this._addGroup(this.personId, this.spouseId, true);
-        
-        // Add a new group when the pedigree is extended
-        this.addEventListener('extend-couple', (e) => {
-          this._addGroup(e.detail.husbandId, e.detail.wifeId, false, e.detail.level + 1, e.detail.left, e.detail.top);
-        });
-        
-        // Collapse the pedigree when collapse buttons are clicked
-        this.addEventListener('collapse-couple', (e) => {
-          this._collapseTo(e.detail.level);
-        });
       }
       
       reload() {
@@ -83,22 +73,13 @@ Display a FamilySearch person's pedigree.
         // this.$.request.generateRequest();
       }
       
-      _addGroup(personId, spouseId, root, level, left, top) {
+      _addGroup(personId, spouseId, root) {
         const group = document.createElement('fs-pedigree-ancestor-group');
         group.personId = personId;
         group.spouseId = spouseId;
         group.rootGroup = root;
         group.clientName = this.clientName;
-        if(level) {
-          group.level = level;
-          this._removeLevels(level);
-        }
-        if(left && top) {
-          group.positionWithCouple(left, top);
-        }
-        // We want the new groups to be layered underneath previous groups
-        // so we add the new groups before the existing groups in the DOM.
-        this.$.groups.prepend(group);
+        this.$.groups.appendChild(group);
       }
       
       /**

@@ -38,6 +38,10 @@
         }
       }
       
+      paper-spinner-lite {
+        --paper-spinner-color: var(--google-green-500);
+      }
+      
     </style>
     <paper-card>
       <div class="card-content">
@@ -49,11 +53,14 @@
         </template>
       </div>
     </paper-card>
-    <template is="dom-if" if="{{_showExtendButton(extend, _extended)}}">
+    <template is="dom-if" if="{{_showExtendButton(extend, extended, loading)}}">
       <paper-fab mini icon="chevron-right" on-click="_extendEvent"></paper-fab>
     </template>
-    <template is="dom-if" if="{{_showCollapseButton(extend, _extended)}}">
+    <template is="dom-if" if="{{_showCollapseButton(extend, extended, loading)}}">
       <paper-fab mini icon="chevron-left" on-click="_collapseEvent"></paper-fab>
+    </template>
+    <template is="dom-if" if="{{_showLoadingIcon(extend, loading)}}">
+      <paper-fab mini icon="more-horiz" disabled></paper-fab>
     </template>
   </template>
   <script>
@@ -75,19 +82,29 @@
           },
           
           /** Whether the pedigree is currently extended from this couple */
-          _extended: {
+          extended: {
+            type: Boolean,
+            value: false
+          },
+          
+          /** Whether to show the loading icon */
+          loading: {
             type: Boolean,
             value: false
           }
         };
       }
       
-      _showExtendButton(extend, _extended) {
-        return extend && !_extended;
+      _showExtendButton(extend, extended, loading) {
+        return extend && !extended && !loading;
       }
       
-      _showCollapseButton(extend, _extended) {
-        return extend && _extended;
+      _showCollapseButton(extend, extended, loading) {
+        return extend && extended && !loading;
+      }
+      
+      _showLoadingIcon(extend, loading) {
+        return extend && loading;
       }
       
       /**
@@ -100,7 +117,7 @@
        * @param {{top:string}} CSS top property of this couple
        */
       _extendEvent() {
-        this._extended = true;
+        this.extended = true;
         this.dispatchEvent(new CustomEvent('extend-couple', {
           detail: this._eventDetail(),
           // We want this event to go through the ancestor group and be caught
@@ -120,7 +137,7 @@
        * @param {{top:string}} CSS top property of this couple
        */
       _collapseEvent() {
-        this._extended = false;
+        this.extended = false;
         this.dispatchEvent(new CustomEvent('collapse-couple', {
           detail: this._eventDetail(),
           // We want this event to go through the ancestor group and be caught
