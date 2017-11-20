@@ -103,6 +103,12 @@
             value: ''
           },
           
+          /** Whether to show the "+ Add Person" buttons in the pedigree when a person is missing */
+          addPersons: {
+            type: Boolean,
+            value: false
+          },
+          
           /**
            * Whether this is the root group. The root group displays the root
            * couple and two additional generations. Non-root groups don't display
@@ -266,6 +272,7 @@
               coupleElement.husband = coupleData.husband;
               coupleElement.wife = coupleData.wife;
               coupleElement.clientName = this.clientName;
+              coupleElement.addPersons = this.addPersons;
               coupleElement.style.left = coupleData.left + 'px';
               coupleElement.style.top = coupleData.top + 'px';
               coupleElement.style.width = COUPLE_WIDTH + 'px';
@@ -305,6 +312,7 @@
         group.spouseId = e.detail.wifeId;
         group.clientName = this.clientName;
         group.level = this.level + 1;
+        group.addPersons = this.addPersons;
         this.nextGroup = group;
         group.positionWithCouple(position.left, position.top);
         group.addEventListener('loading-changed', (e) => {

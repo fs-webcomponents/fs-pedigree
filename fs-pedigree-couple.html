@@ -45,11 +45,21 @@
     </style>
     <paper-card>
       <div class="card-content">
-        <template is="dom-if" if="{{husband}}">
+        <template is="dom-if" if="{{!_addHusband}}">
           <fs-person-chip client-name="[[clientName]]" person="[[husband]]"></fs-person-chip>
         </template>
-        <template is="dom-if" if="{{wife}}">
+        <template is="dom-if" if="{{_addHusband}}">
+          <fs-person-chip>
+            <paper-button>+ Add Person</paper-button>
+          </fs-person-chip>
+        </template>
+        <template is="dom-if" if="{{!_addWife}}">
           <fs-person-chip client-name="[[clientName]]" person="[[wife]]"></fs-person-chip>
+        </template>
+        <template is="dom-if" if="{{_addWife}}">
+          <fs-person-chip>
+            <paper-button>+ Add Person</paper-button>
+          </fs-person-chip>
         </template>
       </div>
     </paper-card>
@@ -73,6 +83,12 @@
           husband: Object,
           wife: Object,
           
+          /** Whether to show the "+ Add Person" buttons in the pedigree when a person is missing */
+          addPersons: {
+            type: Boolean,
+            value: false
+          },
+          
           /**
            * Whether to show the button to extend the pedigree from this couple
            */
@@ -91,6 +107,18 @@
           loading: {
             type: Boolean,
             value: false
+          },
+          
+          _addHusband: {
+            type: Boolean,
+            value: false,
+            computed: '_computeAddHusband(husband, addPersons)'
+          },
+          
+          _addWife: {
+            type: Boolean,
+            value: false,
+            computed: '_computeAddHusband(wife, addPersons)'
           }
         };
       }
@@ -105,6 +133,14 @@
       
       _showLoadingIcon(extend, loading) {
         return extend && loading;
+      }
+      
+      _computeAddHusband(husband, addPerson) {
+        return !husband && addPerson;
+      }
+      
+      _computeAddWife(wife, addPerson) {
+        return !wife && addPerson;
       }
       
       /**
