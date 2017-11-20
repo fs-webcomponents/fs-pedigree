@@ -69,7 +69,7 @@ Display a FamilySearch person's pedigree.
         
         this.addEventListener('extend-couple', (e) => {
           // We want to position the new group such that the middle is in line
-          this._addGroup(e.detail.husbandId, e.detail.wifeId, false, e.detail.left, e.detail.top);
+          this._addGroup(e.detail.husbandId, e.detail.wifeId, false, e.detail.level + 1, e.detail.left, e.detail.top);
         });
       }
       
@@ -78,18 +78,33 @@ Display a FamilySearch person's pedigree.
         // this.$.request.generateRequest();
       }
       
-      _addGroup(personId, spouseId, root, left, top) {
+      _addGroup(personId, spouseId, root, level, left, top) {
         const group = document.createElement('fs-pedigree-ancestor-group');
         group.personId = personId;
         group.spouseId = spouseId;
         group.rootGroup = root;
         group.clientName = this.clientName;
+        if(level) {
+          group.level = level;
+          this._removeLevels(level);
+        }
         if(left && top) {
           group.positionWithCouple(left, top);
         }
         // We want the new groups to be layered underneath previous groups
         // so we add the new groups before the existing groups in the DOM.
         this.$.groups.prepend(group);
+      }
+      
+      /**
+       * Remove groups from any level greater than or equal to the given level.
+       */
+      _removeLevels(level) {
+        Array.from(this.$.groups.children).forEach((group) => {
+          if(group.level >= level) {
+            group.remove();
+          }
+        });
       }
       
     }

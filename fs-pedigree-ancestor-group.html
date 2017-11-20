@@ -120,6 +120,12 @@
             value: false
           },
           
+          /** Which level this group represents. */
+          level: {
+            type: Number,
+            value: 1
+          },
+          
           _couples: {
             type: Array,
             value: function(){
@@ -259,6 +265,8 @@
               // group so here we modify the position to be relative to the
               // pedigree container by adding this element's position to the 
               // couple element's position.
+              //
+              // We also add the current group level
               coupleElement.addEventListener('extend-couple', (e) => {
                 const coupleLeft = parseInt(e.detail.left, 10);
                 const thisLeft = this.style.left ? parseInt(this.style.left, 10) : 0;
@@ -266,6 +274,7 @@
                 const thisTop = this.style.top ? parseInt(this.style.top, 10) : 0;
                 e.detail.left = `${coupleLeft + thisLeft}px`;
                 e.detail.top = `${coupleTop + thisTop}px`;
+                e.detail.level = this.level;
               });
               
               if(coupleData.couplePosition > 3) {
