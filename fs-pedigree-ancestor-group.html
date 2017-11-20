@@ -30,6 +30,7 @@
     </style>
     <svg id="svg">
       <g>
+        <path id="line1" class="line"></path>
         <path id="line2" class="line"></path>
         <path id="line3" class="line"></path>
         <path id="line4" class="line"></path>
@@ -55,6 +56,7 @@
     const COUPLE_SPACING = 30;
     
     const COUPLE_WIDTH_HALF = COUPLE_WIDTH / 2;
+    const COUPLE_HEIGHT_HALF = COUPLE_HEIGHT / 2;
     const COUPLE_HEIGHT_AND_SPACING = COUPLE_HEIGHT + COUPLE_SPACING;
     const COUPLE_HEIGHT_AND_SPACING_HALF = COUPLE_HEIGHT_AND_SPACING / 2;
     
@@ -70,10 +72,10 @@
     const COUPLE_7_TOP = 3 * COUPLE_HEIGHT_AND_SPACING;
     
     const LINE_COL2_LEFT = COUPLE_WIDTH_HALF;
-    const LINE_COL2_HEIGHT = COUPLE_HEIGHT / 2 + COUPLE_SPACING;
+    const LINE_COL2_HEIGHT = COUPLE_HEIGHT + COUPLE_SPACING;
     const LINE_COL2_WIDTH = COUPLE_COL2_LEFT - LINE_COL2_LEFT;
     const LINE_COL3_LEFT = COUPLE_COL2_LEFT + COUPLE_WIDTH_HALF;
-    const LINE_COL3_HEIGHT = COUPLE_2_TOP - (COUPLE_HEIGHT / 2);
+    const LINE_COL3_HEIGHT = COUPLE_2_TOP - COUPLE_HEIGHT_HALF;
     const LINE_COL3_WIDTH = COUPLE_WIDTH_HALF + COUPLE_SPACING;
     
     const TOTAL_WIDTH = COUPLE_COL3_LEFT + COUPLE_WIDTH;
@@ -107,7 +109,7 @@
            * the root couple (they're already displayed) and just display the
            * two additional generatiosn.
            */
-          root: {
+          rootGroup: {
             type: Boolean,
             value: false
           },
@@ -222,25 +224,29 @@
         this._couples.forEach((coupleData, i) => {
           if(coupleData.wife || coupleData.husband) {
             
-            // Create the couple, position them, and add to the DOM
-            const coupleElement = document.createElement('fs-pedigree-couple');
-            coupleElement.husband = coupleData.husband;
-            coupleElement.wife = coupleData.wife;
-            coupleElement.clientName = this.clientName;
-            coupleElement.style.left = coupleData.left + 'px';
-            coupleElement.style.top = coupleData.top + 'px';
-            coupleElement.style.width = COUPLE_WIDTH + 'px';
-            coupleElement.style.position = 'absolute';
-            coupleElement.style.height = COUPLE_HEIGHT + 'px';
-            this.$.couples.appendChild(coupleElement);
-            
-            if(coupleData.couplePosition > 3) {
-              coupleElement.extend = true;
+            // Create the couple, position them, and add to the DOM.
+            // Don't add the 1st couple if we're not a root node.
+            if(coupleData.couplePosition !== 1 || this.rootGroup) {
+              const coupleElement = document.createElement('fs-pedigree-couple');
+              coupleElement.husband = coupleData.husband;
+              coupleElement.wife = coupleData.wife;
+              coupleElement.clientName = this.clientName;
+              coupleElement.style.left = coupleData.left + 'px';
+              coupleElement.style.top = coupleData.top + 'px';
+              coupleElement.style.width = COUPLE_WIDTH + 'px';
+              coupleElement.style.position = 'absolute';
+              coupleElement.style.height = COUPLE_HEIGHT + 'px';
+              this.$.couples.appendChild(coupleElement);
+              
+              if(coupleData.couplePosition > 3) {
+                coupleElement.extend = true;
+              }
             }
             
-            // Show the line
-            if(coupleData.couplePosition > 1) {
-              this.$[`line${coupleData.couplePosition}`].style.display = 'block';
+            // Show the start lines if we're not a root node and show
+            // other lines if the couple exists.
+            if((coupleData.couplePosition === 1 && !this.rootGroup) || coupleData.couplePosition > 1) {
+              this._showLine(coupleData.couplePosition);
             }
           }
         });
@@ -259,6 +265,18 @@
       }
       
       /**
+       * Show a line.
+       * 
+       * @param {Integer} num Line number
+       */
+      _showLine(num) {
+        const line = this.$[this._lineId(num)];
+        if(line) {
+          line.style.display = 'block';
+        }
+      }
+      
+      /**
        * Hide all lines. The default display value is none (via CSS) so here
        * we just clear the value we set when showing the line.
        */
@@ -269,24 +287,65 @@
       }
       
       /**
-       * Draw lines but don't modify their display
+       * Draw lines but don't modify their display. Default display is none.
+       * We will decide later whether they need to be shown.
        */
       _drawLines() {
-        this._drawLine(2, LINE_COL2_LEFT, COUPLE_ROOT_TOP, -LINE_COL2_HEIGHT, LINE_COL2_WIDTH);
-        this._drawLine(3, LINE_COL2_LEFT, COUPLE_ROOT_TOP + COUPLE_HEIGHT, LINE_COL2_HEIGHT, LINE_COL2_WIDTH);
-        this._drawLine(4, LINE_COL3_LEFT, COUPLE_2_TOP, -LINE_COL3_HEIGHT, LINE_COL3_WIDTH);
-        this._drawLine(5, LINE_COL3_LEFT, COUPLE_2_TOP + COUPLE_HEIGHT, LINE_COL3_HEIGHT, LINE_COL3_WIDTH);
-        this._drawLine(6, LINE_COL3_LEFT, COUPLE_3_TOP, -LINE_COL3_HEIGHT, LINE_COL3_WIDTH);
-        this._drawLine(7, LINE_COL3_LEFT, COUPLE_3_TOP + COUPLE_HEIGHT, LINE_COL3_HEIGHT, LINE_COL3_WIDTH);
+        this._drawStartLine();
+        // Lines 2 and 3 need to account for the root couple not being drawn
+        // when this isn't a root group. Therefore instead of stopping at the
+        // border of the root couple we extend to the middle. When the root couple
+        // is drawn part of the line will be covered. When the root couple isn't
+        // drawn then the lines will connect as we want.
+        this._drawOtherLine(2, LINE_COL2_LEFT, COUPLE_ROOT_TOP + COUPLE_HEIGHT_HALF, -LINE_COL2_HEIGHT, LINE_COL2_WIDTH);
+        this._drawOtherLine(3, LINE_COL2_LEFT, COUPLE_ROOT_TOP + COUPLE_HEIGHT_HALF, LINE_COL2_HEIGHT, LINE_COL2_WIDTH);
+        this._drawOtherLine(4, LINE_COL3_LEFT, COUPLE_2_TOP, -LINE_COL3_HEIGHT, LINE_COL3_WIDTH);
+        this._drawOtherLine(5, LINE_COL3_LEFT, COUPLE_2_TOP + COUPLE_HEIGHT, LINE_COL3_HEIGHT, LINE_COL3_WIDTH);
+        this._drawOtherLine(6, LINE_COL3_LEFT, COUPLE_3_TOP, -LINE_COL3_HEIGHT, LINE_COL3_WIDTH);
+        this._drawOtherLine(7, LINE_COL3_LEFT, COUPLE_3_TOP + COUPLE_HEIGHT, LINE_COL3_HEIGHT, LINE_COL3_WIDTH);
+      }
+      
+      /**
+       * Draw the beginning lines for a non-root group. They are the lines that
+       * stretch out to the left to connect to the couple where the pedigree
+       * was expanded.
+       */
+      _drawStartLine() {
+        // We already have lines extending out from couples 2 and 3 so we just
+        // need to connect them to the couple group on the left that we
+        // extended from with a horizontal line at the middle vertical position.
+        this._drawLine(1, `M 0 ${TOTAL_HEIGHT / 2} h ${COUPLE_WIDTH_HALF}`);
+      }
+      
+      /**
+       * Draw a path that connects two couples. Lines are drawn starting with a
+       * couple group to the left. The line proceeds vertically up or down then
+       * turns to the right and connects horizontally to the left side of the
+       * final couple group.
+       * 
+       * @param {Integer} num Line number. Line numbers are associated with the
+       * couple group on the right hat the path connects to horizontally.
+       * @param {Integer} startX The starting x coordinate for the vertical 
+       * portion of the line.
+       * @param {Integer} startY The starting y coordinate for the vertical
+       * portion of the line.
+       * @param {Integer} vertical The length of the vertical portion of the line.
+       * @param {Integer} horizontal The length of the horizontal portion of the line.
+       */
+      _drawOtherLine(num, startX, startY, vertical, horizontal) {
+        this._drawLine(num, `M ${startX} ${startY} v ${vertical} h ${horizontal}`);
       }
       
       /**
        * Create a path element and contruct it's path
+       * 
+       * @param {Integer} num Line number.
+       * @param {String} path SVG path description
        */
-      _drawLine(num, startX, startY, vertical, horizontal) {
+      _drawLine(num, path) {
         const line = this.$[this._lineId(num)];
         if(line) {
-          line.setAttribute('d', `M ${startX} ${startY} v ${vertical} h ${horizontal}`);
+          line.setAttribute('d', path);
         }
       }
       
