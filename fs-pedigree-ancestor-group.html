@@ -204,7 +204,7 @@
       positionWithCouple(left, top) {
         const x = parseInt(left, 10);
         const y = parseInt(top, 10);
-        this.style.left = `${x + COUPLE_WIDTH}px`;
+        this.style.left = `${x + COUPLE_WIDTH - COUPLE_SPACING}px`;
         this.style.top = `${(y + COUPLE_HEIGHT_HALF) - (TOTAL_HEIGHT / 2)}px`;
       }
       
@@ -252,6 +252,21 @@
               coupleElement.style.position = 'absolute';
               coupleElement.style.height = COUPLE_HEIGHT + 'px';
               this.$.couples.appendChild(coupleElement);
+              
+              // extend-couple events contain information about the position of
+              // the couple element. That position is used to position the new
+              // ancestor group. However that position is relative to this couple
+              // group so here we modify the position to be relative to the
+              // pedigree container by adding this element's position to the 
+              // couple element's position.
+              coupleElement.addEventListener('extend-couple', (e) => {
+                const coupleLeft = parseInt(e.detail.left, 10);
+                const thisLeft = this.style.left ? parseInt(this.style.left, 10) : 0;
+                const coupleTop = parseInt(e.detail.top, 10);
+                const thisTop = this.style.top ? parseInt(this.style.top, 10) : 0;
+                e.detail.left = `${coupleLeft + thisLeft}px`;
+                e.detail.top = `${coupleTop + thisTop}px`;
+              });
               
               if(coupleData.couplePosition > 3) {
                 coupleElement.extend = true;
