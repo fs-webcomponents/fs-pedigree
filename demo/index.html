@@ -16,13 +16,32 @@
       paper-input {
         max-width: 200px;
       }
+      
+      header {
+        background-color: #fff;
+        border-bottom: 1px solid #ccc;
+        padding: 1em;
+      }
+      
+      fs-pedigree {
+        width: 100%;
+        z-index: -1;
+        position: absolute;
+        top: 165px;
+        bottom: 0;
+        left: 0;
+        right: 0;
+      }
     </style>
 
     <fs-client app-key="a02j00000099Mc2AAE" redirect-uri="." environment="sandbox" save-access-token exchange-code redirect-after-sign-in="."></fs-client>
-    <fs-signin></fs-signin>
-    <br><br>
     
-    <paper-input id="person-id" label="person ID" value="KWQM-1XT"></paper-input>
+    <header>
+      <fs-signin></fs-signin>
+      <br><br>
+      <paper-input id="person-id" label="person ID" value="KWQM-1XT"></paper-input>
+    </header>
+    
     <fs-pedigree person-id="KWQM-1XT"></fs-pedigree>
 
     <script>
