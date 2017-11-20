@@ -84,11 +84,8 @@ Display a FamilySearch person's pedigree.
         group.spouseId = spouseId;
         group.rootGroup = root;
         group.clientName = this.clientName;
-        if(left) {
-          group.style.left = left;
-        }
-        if(top) {
-          group.style.top = top;
+        if(left && top) {
+          group.positionWithCouple(left, top);
         }
         this.$.groups.appendChild(group);
       }

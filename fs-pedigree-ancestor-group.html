@@ -193,6 +193,21 @@
         this.$.request.generateRequest();
       }
       
+      /**
+       * Position the group to be in line with the given coordinates of the
+       * couple group that was extended.
+       * 
+       * @param {String} left Left position of the couple, in pixels
+       * @param {String} top Top position of the couple, in pixels. The group 
+       * will be vertically centered with this position.
+       */
+      positionWithCouple(left, top) {
+        const x = parseInt(left, 10);
+        const y = parseInt(top, 10);
+        this.style.left = `${x + COUPLE_WIDTH}px`;
+        this.style.top = `${(y + COUPLE_HEIGHT_HALF) - (TOTAL_HEIGHT / 2)}px`;
+      }
+      
       _computeRequestUrl(personId, spouseId) {
         return `/platform/tree/ancestry?person=${personId}&spouse=${spouseId}&generations=2`;
       }
