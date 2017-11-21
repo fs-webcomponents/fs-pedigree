@@ -63,13 +63,13 @@
         </template>
       </div>
     </paper-card>
-    <template is="dom-if" if="{{_showExtendButton(extend, extended, loading)}}">
+    <template is="dom-if" if="{{_showExtendButton(_showButtons, extended, loading)}}">
       <paper-fab mini icon="chevron-right" on-click="_extendEvent"></paper-fab>
     </template>
-    <template is="dom-if" if="{{_showCollapseButton(extend, extended, loading)}}">
+    <template is="dom-if" if="{{_showCollapseButton(_showButtons, extended, loading)}}">
       <paper-fab mini icon="chevron-left" on-click="_collapseEvent"></paper-fab>
     </template>
-    <template is="dom-if" if="{{_showLoadingIcon(extend, loading)}}">
+    <template is="dom-if" if="{{_showLoadingIcon(_showButtons, loading)}}">
       <paper-fab mini icon="more-horiz" disabled></paper-fab>
     </template>
   </template>
@@ -80,8 +80,15 @@
       
       static get properties() {
         return {
-          husband: Object,
-          wife: Object,
+          husband: {
+            type: Object,
+            value: null
+          },
+          
+          wife: {
+            type: Object,
+            value: null
+          },
           
           /** Whether to show the "+ Add Person" buttons in the pedigree when a person is missing */
           addPersons: {
@@ -119,20 +126,30 @@
             type: Boolean,
             value: false,
             computed: '_computeAddHusband(wife, addPersons)'
+          },
+          
+          _showButtons: {
+            type: Boolean,
+            value: false,
+            computed: '_computeShowButtons(extend, husband, wife)'
           }
         };
       }
       
-      _showExtendButton(extend, extended, loading) {
-        return extend && !extended && !loading;
+      _showExtendButton(_showButtons, extended, loading) {
+        return _showButtons && !extended && !loading;
       }
       
-      _showCollapseButton(extend, extended, loading) {
-        return extend && extended && !loading;
+      _showCollapseButton(_showButtons, extended, loading) {
+        return _showButtons && extended && !loading;
       }
       
-      _showLoadingIcon(extend, loading) {
-        return extend && loading;
+      _showLoadingIcon(_showButtons, loading) {
+        return _showButtons && loading;
+      }
+      
+      _computeShowButtons(extend, husband, wife) {
+        return extend && (husband || wife);
       }
       
       _computeAddHusband(husband, addPerson) {
