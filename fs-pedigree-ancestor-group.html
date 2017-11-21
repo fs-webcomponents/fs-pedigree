@@ -305,7 +305,57 @@
        * or if addPersons is true and their child is present.
        */
       _displayCouple(couple) {
-        return this.addPersons || couple.wife || couple.husband;
+        return couple.wife || couple.husband || (
+          this.addPersons && this._coupleHasChild(couple)  
+        );
+      }
+      
+      /**
+       * Calculate whether the couple has a child. This is used when calculating
+       * whether a particular couple group should be shown. When adding persons,
+       * we want to show empty couples so that parents can be added. This method
+       * is called on those empty couples so that we can check whether there is
+       * a child that those parents belong to. Otherwise we don't want ot show
+       * the couple because we can't add parents to a person that doesn't exist.
+       */
+      _coupleHasChild(couple) {
+        let childCoupleNum = 0;
+        switch(couple.couplePosition) {
+          case 1: // This shouldn't be called, but just in case...
+            return true;
+          case 2:
+          case 3:
+            childCoupleNum = 1;
+            break;
+          case 4:
+          case 5:
+            childCoupleNum = 2;
+            break;
+          case 6:
+          case 7:
+            childCoupleNum = 3;
+            break;
+        }
+        
+        // Shouldn't happen
+        if(!childCoupleNum) {
+          return false;
+        }
+        
+        // Even couples are parents of males; odd couples are parents of females.
+        const childGender = couple.couplePosition % 2 === 0 ? 'male' : 'female';
+        
+        const childCouple = this._couples.find((c) => c.couplePosition === childCoupleNum);
+        if(childCouple) {
+          if(childGender === 'male' && childCouple.husband) {
+            return true;
+          }
+          if(childGender === 'female' && childCouple.wife) {
+            return true;
+          }
+        } 
+          
+        return false;
       }
       
       /**
