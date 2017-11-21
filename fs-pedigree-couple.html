@@ -228,20 +228,22 @@
         }));
       }
       
-      _husbandClick() {
+      _husbandClick(e) {
         this.dispatchEvent(new CustomEvent('person-click', {
           detail: {
-            personId: this._getHusbandId()
+            personId: this._getHusbandId(),
+            sourceEvent: e
           },
           bubbles: true,
           composed: true
         }));
       }
       
-      _wifeClick() {
+      _wifeClick(e) {
         this.dispatchEvent(new CustomEvent('person-click', {
           detail: {
-            personId: this._getWifeId()
+            personId: this._getWifeId(),
+            sourceEvent: e
           },
           bubbles: true,
           composed: true
