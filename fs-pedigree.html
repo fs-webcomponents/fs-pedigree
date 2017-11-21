@@ -97,8 +97,9 @@ Display a FamilySearch person's pedigree.
       }
       
       reload() {
-        // TODO: How will this be done?
-        // this.$.request.generateRequest();
+        // Couples are listed in the DOM in reverse order (for the sake of layering)
+        // so we reverse the list and reload in order from the root on out.
+        Array.from(this.$.groups.children).reverse().forEach((couple) => couple.reload());
       }
       
       _addGroup(personId, spouseId, root) {
