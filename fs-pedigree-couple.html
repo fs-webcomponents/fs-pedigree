@@ -46,7 +46,7 @@
     <paper-card>
       <div class="card-content">
         <template is="dom-if" if="{{!_addHusband}}">
-          <fs-person-chip client-name="[[clientName]]" person="[[husband]]"></fs-person-chip>
+          <fs-person-chip client-name="[[clientName]]" person="[[husband]]" on-click="_husbandClick"></fs-person-chip>
         </template>
         <template is="dom-if" if="{{_addHusband}}">
           <fs-person-chip>
@@ -54,7 +54,7 @@
           </fs-person-chip>
         </template>
         <template is="dom-if" if="{{!_addWife}}">
-          <fs-person-chip client-name="[[clientName]]" person="[[wife]]"></fs-person-chip>
+          <fs-person-chip client-name="[[clientName]]" person="[[wife]]" on-click="_wifeClick"></fs-person-chip>
         </template>
         <template is="dom-if" if="{{_addWife}}">
           <fs-person-chip>
@@ -225,6 +225,26 @@
           detail: {
             husbandId: this._getHusbandId()
           }
+        }));
+      }
+      
+      _husbandClick() {
+        this.dispatchEvent(new CustomEvent('person-click', {
+          detail: {
+            personId: this._getHusbandId()
+          },
+          bubbles: true,
+          composed: true
+        }));
+      }
+      
+      _wifeClick() {
+        this.dispatchEvent(new CustomEvent('person-click', {
+          detail: {
+            personId: this._getWifeId()
+          },
+          bubbles: true,
+          composed: true
         }));
       }
       
