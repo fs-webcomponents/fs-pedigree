@@ -50,7 +50,6 @@
       var pedigree = document.querySelector('fs-pedigree');
       var personId = document.getElementById('person-id');
       
-      /*
       // Update pedigree when the person ID in the paper-input changes
       personId.addEventListener('change', function(e){
         if(this.value){
@@ -58,14 +57,15 @@
         }
       });
       
-      // Update the pedigree when a person in the pedigree is clicked
-      pedigree.addEventListener('person-tap', function(e){
+      pedigree.addEventListener('person-click', function(e){
         if(e.detail.personId){
-          pedigree.personId = e.detail.personId;
-          personId.value = e.detail.personId;
+          console.log('person clicked', e.detail.personId);
         }
       });
-      */
+      
+      pedigree.addEventListener('add-person', function(e){
+        console.log('add person', e.detail);
+      });
     </script>
     </script>
   </body>

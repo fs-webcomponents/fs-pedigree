@@ -50,7 +50,7 @@
         </template>
         <template is="dom-if" if="{{_addHusband}}">
           <fs-person-chip>
-            <paper-button>+ Add Person</paper-button>
+            <paper-button on-click="_addHusbandEvent">+ Add Person</paper-button>
           </fs-person-chip>
         </template>
         <template is="dom-if" if="{{!_addWife}}">
@@ -58,7 +58,7 @@
         </template>
         <template is="dom-if" if="{{_addWife}}">
           <fs-person-chip>
-            <paper-button>+ Add Person</paper-button>
+            <paper-button on-click="_addWifeEvent">+ Add Person</paper-button>
           </fs-person-chip>
         </template>
       </div>
@@ -205,11 +205,35 @@
        */
       _eventDetail() {
         return {
-          husbandId: this.husband ? this.husband.id : undefined,
-          wifeId: this.wife ? this.wife.id : undefined,
+          husbandId: this._getHusbandId(),
+          wifeId: this._getWifeId(),
           left: this.style.left,
           top: this.style.top
         };
+      }
+      
+      _addHusbandEvent() {
+        this.dispatchEvent(new CustomEvent('add-husband', {
+          detail: {
+            wifeId: this._getWifeId()
+          }
+        }));
+      }
+      
+      _addWifeEvent() {
+        this.dispatchEvent(new CustomEvent('add-wife', {
+          detail: {
+            husbandId: this._getHusbandId()
+          }
+        }));
+      }
+      
+      _getHusbandId() {
+        return this.husband ? this.husband.id : undefined;
+      }
+      
+      _getWifeId() {
+        return this.wife ? this.wife.id : undefined;
       }
       
     }

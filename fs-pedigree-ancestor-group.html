@@ -281,9 +281,15 @@
               coupleElement.style.height = COUPLE_HEIGHT + 'px';
               this.$.couples.appendChild(coupleElement);
               
-              // Listen for couple events and modify their details
+              // Listen for couple events
               coupleElement.addEventListener('extend-couple', this._extendCouple.bind(this));
               coupleElement.addEventListener('collapse-couple', this._collapseCouple.bind(this));
+              coupleElement.addEventListener('add-husband', (e) => {
+                this._addPerson(coupleData);
+              });
+              coupleElement.addEventListener('add-wife', (e) => {
+                this._addPerson(coupleData);
+              });
               
               if(coupleData.couplePosition > 3) {
                 coupleElement.extend = true;
@@ -306,7 +312,7 @@
        */
       _displayCouple(couple) {
         return couple.wife || couple.husband || (
-          this.addPersons && this._coupleHasChild(couple)  
+          this.addPersons && this._coupleHasChild(couple.couplePosition)  
         );
       }
       
@@ -318,44 +324,56 @@
        * a child that those parents belong to. Otherwise we don't want ot show
        * the couple because we can't add parents to a person that doesn't exist.
        */
-      _coupleHasChild(couple) {
-        let childCoupleNum = 0;
-        switch(couple.couplePosition) {
-          case 1: // This shouldn't be called, but just in case...
-            return true;
-          case 2:
-          case 3:
-            childCoupleNum = 1;
-            break;
-          case 4:
-          case 5:
-            childCoupleNum = 2;
-            break;
-          case 6:
-          case 7:
-            childCoupleNum = 3;
-            break;
-        }
+      _coupleHasChild(parentCoupleNum) {
+        return !!this._getCouplesChild(parentCoupleNum);
+      }
+      
+      /**
+       * Get a couple's child
+       * 
+       * @param {Number} parentCoupleNum
+       */
+      _getCouplesChild(parentCoupleNum) {
+        const childCoupleNum = this._calculateChildCoupleNumber(parentCoupleNum);
         
         // Shouldn't happen
         if(!childCoupleNum) {
-          return false;
+          return;
         }
         
         // Even couples are parents of males; odd couples are parents of females.
-        const childGender = couple.couplePosition % 2 === 0 ? 'male' : 'female';
+        const childGender = parentCoupleNum % 2 === 0 ? 'male' : 'female';
         
         const childCouple = this._couples.find((c) => c.couplePosition === childCoupleNum);
         if(childCouple) {
-          if(childGender === 'male' && childCouple.husband) {
-            return true;
+          if(childGender === 'male') {
+            return childCouple.husband;
           }
-          if(childGender === 'female' && childCouple.wife) {
-            return true;
+          if(childGender === 'female') {
+            return childCouple.wife;
           }
         } 
-          
-        return false;
+      }
+      
+      /**
+       * Calculate the child's couple number of another couple
+       * 
+       * @param {Number} parentCoupleNum
+       */
+      _calculateChildCoupleNumber(parentCoupleNum) {
+        switch(parentCoupleNum) {
+          case 1: // This shouldn't be called, but just in case...
+            return 0;
+          case 2:
+          case 3:
+            return 1;
+          case 4:
+          case 5:
+            return 2;
+          case 6:
+          case 7:
+            return 3;
+        }
       }
       
       /**
@@ -430,6 +448,24 @@
           couple.husband = null;
         });
         this.$.couples.innerHTML = '';
+      }
+      
+      /**
+       * Emit the add-person event
+       * 
+       * @param {Object} couple
+       */
+      _addPerson(couple) {
+        const child = this._getCouplesChild(couple.couplePosition);
+        this.dispatchEvent(new CustomEvent('add-person', {
+          detail: {
+            husbandId: couple.husband ? couple.husband.id : undefined,
+            wifeId: couple.wife ? couple.wife.id : undefined,
+            childId: child ? child.id : undefined
+          },
+          bubbles: true,
+          composed: true
+        }));
       }
       
       /**
