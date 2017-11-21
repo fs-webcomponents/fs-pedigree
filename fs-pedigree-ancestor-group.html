@@ -459,8 +459,8 @@
         const child = this._getCouplesChild(couple.couplePosition);
         this.dispatchEvent(new CustomEvent('add-person', {
           detail: {
-            husbandId: couple.husband ? couple.husband.id : undefined,
-            wifeId: couple.wife ? couple.wife.id : undefined,
+            fetherId: couple.husband ? couple.husband.id : undefined,
+            motherId: couple.wife ? couple.wife.id : undefined,
             childId: child ? child.id : undefined
           },
           bubbles: true,

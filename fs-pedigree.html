@@ -30,11 +30,21 @@ Display a FamilySearch person's pedigree.
       static get is() { return 'fs-pedigree'; }
       
       /**
-       * Fired when a person is tapped. The event details will contain the same
-       * details as a click event with an added `personId` property.
+       * Fired when a person is clicked.
        *
-       * @event person-tap
+       * @event person-click
        * @param {{personId:string}} ID of the person that was clicked.
+       */
+       
+      /**
+       * Fired when an "Add Person" button is clicked. At least one of the
+       * documented params will exist, but not all. The params are meant to
+       * be passed on to fs-add-person
+       * 
+       * @event add-person
+       * @param {{childId:string}}
+       * @param {{fatherId:string}}
+       * @param {{motherId:string}}
        */
       
       static get properties() {
@@ -42,7 +52,8 @@ Display a FamilySearch person's pedigree.
           
           /** ID of the root person */
           personId: {
-            type: String
+            type: String,
+            observer: '_personIdChanged'
           },
           
           /** 
@@ -91,9 +102,8 @@ Display a FamilySearch person's pedigree.
       
       ready() {
         super.ready();
-        
-        // Start setup by appending the root group
-        this._addGroup(this.personId, this.spouseId, true);
+        this.setPanningElement(this.$.groups);
+        this.reset();
       }
       
       reload() {
@@ -102,11 +112,20 @@ Display a FamilySearch person's pedigree.
         Array.from(this.$.groups.children).reverse().forEach((couple) => couple.reload());
       }
       
-      _addGroup(personId, spouseId, root) {
+      reset() {
+        this.$.groups.innerHTML = '';
+        this._addRootGroup();
+      }
+      
+      _personIdChanged() {
+        this.reset();
+      }
+      
+      _addRootGroup(personId, spouseId, root) {
         const group = document.createElement('fs-pedigree-ancestor-group');
-        group.personId = personId;
-        group.spouseId = spouseId;
-        group.rootGroup = root;
+        group.personId = this.personId;
+        group.spouseId = this.spouseId;
+        group.rootGroup = true;
         group.addPersons = this.addPersons;
         group.clientName = this.clientName;
         this.$.groups.appendChild(group);
