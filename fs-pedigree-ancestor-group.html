@@ -234,7 +234,7 @@
         this.style.top = `${(y + COUPLE_HEIGHT_HALF) - (TOTAL_HEIGHT / 2)}px`;
       }
       
-      _computeRequestUrl(personId, spouseId) {
+      _computeRequestUrl(personId = '', spouseId = '') {
         return `/platform/tree/ancestry?person=${personId}&spouse=${spouseId}&generations=2`;
       }
       
