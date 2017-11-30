@@ -44,6 +44,7 @@
       id="request"
       loading="{{loading}}"
       require-authentication
+      client-name="[[clientName]]"
       url="{{_computeRequestUrl(personId, spouseId)}}"
       on-response="_handleResponse"></fs-request>
   </template>
