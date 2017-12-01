@@ -123,13 +123,15 @@ Display a FamilySearch person's pedigree.
       }
       
       _addRootGroup(personId, spouseId, root) {
-        const group = document.createElement('fs-pedigree-ancestor-group');
-        group.personId = this.personId;
-        group.spouseId = this.spouseId;
-        group.rootGroup = true;
-        group.addPersons = this.addPersons;
-        group.clientName = this.clientName;
-        this.$.groups.appendChild(group);
+        if(personId) {
+          const group = document.createElement('fs-pedigree-ancestor-group');
+          group.personId = this.personId;
+          group.spouseId = this.spouseId;
+          group.rootGroup = true;
+          group.addPersons = this.addPersons;
+          group.clientName = this.clientName;
+          this.$.groups.appendChild(group);
+        }
       }
       
       /**
