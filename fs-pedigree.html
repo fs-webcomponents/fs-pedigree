@@ -122,8 +122,8 @@ Display a FamilySearch person's pedigree.
         this.reset();
       }
       
-      _addRootGroup(personId, spouseId, root) {
-        if(personId) {
+      _addRootGroup() {
+        if(this.personId) {
           const group = document.createElement('fs-pedigree-ancestor-group');
           group.personId = this.personId;
           group.spouseId = this.spouseId;
