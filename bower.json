@@ -1,7 +1,7 @@
 {
   "name": "fs-pedigree",
   "homepage": "https://github.com/fs-webcomponents/fs-pedigree",
-  "version": "4.2.6",
+  "version": "4.2.7",
   "description": "Display a FamilySearch person's pedigree",
   "main": "fs-pedigree.html",
   "keywords": [
