@@ -18,7 +18,7 @@
     "paper-card": "PolymerElements/paper-card#^2.0.0",
     "paper-fab": "PolymerElements/paper-fab#^2.0.0",
     "iron-icons": "PolymerElements/iron-icons#^2.0.1",
-    "pannable-mixin": "fs-webcomponents/pannable-mixin#^1.1.0"
+    "pannable-mixin": "fs-webcomponents/pannable-mixin#^1.2.0"
   },
   "devDependencies": {
     "fs-signin": "fs-webcomponents/fs-signin#^4.0.0",
