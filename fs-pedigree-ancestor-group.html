@@ -236,6 +236,10 @@
       }
       
       _computeRequestUrl(personId = '', spouseId = '') {
+        if(!personId) {
+          personId = spouseId;
+          spouseId = '';
+        }
         return `/platform/tree/ancestry?person=${personId}&spouse=${spouseId}&generations=2`;
       }
       
