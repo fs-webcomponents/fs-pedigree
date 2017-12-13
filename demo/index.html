@@ -36,7 +36,14 @@
       }
     </style>
 
-    <fs-client app-key="a02j00000099Mc2AAE" redirect-uri="." environment="sandbox" save-access-token exchange-code redirect-after-sign-in="."></fs-client>
+    <fs-client 
+      app-key="a02j00000099Mc2AAE" 
+      redirect-uri="." 
+      environment="sandbox" 
+      save-access-token 
+      exchange-code 
+      token-cookie-path="/"
+      redirect-after-sign-in="."></fs-client>
     
     <header>
       <fs-signin></fs-signin>
